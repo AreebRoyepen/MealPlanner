@@ -1,2 +1,2 @@
 # MealPlanner
-MealPlanner
+Meal Planner in Flutter
