@@ -1,2 +1,3 @@
-# MealPlanner
-Meal Planner in Flutter
+# newmealplanner
+
+Meal Planner Flutter project.
