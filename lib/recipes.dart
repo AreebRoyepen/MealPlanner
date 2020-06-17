@@ -3,18 +3,12 @@ import 'package:flutter/material.dart';
 
 class RecipesRoute extends StatelessWidget {
   @override
-
-
-   // List<String> images = ["https://placeimg.com/500/500/any", "https://placeimg.com/500/500/any", "https://placeimg.com/500/500/any", "https://placeimg.com/500/500/any", "https://placeimg.com/500/500/any"];
-
-  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
+    return Scaffold(
+      
         appBar: AppBar(
           title: Text("Recipes Page"),
           centerTitle: true,
-          backgroundColor: Colors.red,
         ),
         body: Container(
           padding: EdgeInsets.all(16.0),
@@ -31,7 +25,7 @@ class RecipesRoute extends StatelessWidget {
         ),
        
 
-      ),
+    
     );
   }
   
