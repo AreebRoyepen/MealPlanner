@@ -9,6 +9,7 @@ class FeedbackPage extends Component {
         return (
             <View style={styles.container}>
                <Header
+                   backgroundColor ='black'
                     leftComponent={<Icon name="menu"  style={{color:'white'}}  onPress={() => this.props.navigation.openDrawer()} />}
                     centerComponent={<Text style={{color:'white'}}>Salwaa's Menu Planner</Text>}
                     rightComponent={<Icon name="cart"  style={{color:'white'}} onPress={() => this.props.navigation.openDrawer()}/>} //this will be the buy more recipes navigation
@@ -34,6 +35,7 @@ class FeedbackPage extends Component {
     style={{ marginTop: 15, marginLeft:15, marginRight:15 }}
     icon="send"
     mode="contained"
+    color="#ffd13b"
   >
     send Feedback
   </Button>
