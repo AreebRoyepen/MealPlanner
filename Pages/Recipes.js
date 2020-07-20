@@ -1,20 +1,27 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import { Header } from 'react-native-elements';
 import { Col, Row, Grid } from "react-native-easy-grid";
 import { Icon,Container, Content,  InputGroup, Input} from 'native-base';
+import { useSelector } from 'react-redux';
 
-class RecipesPage extends Component {
-    render() {
+import HeaderButton from '../components/HeaderButton';
+import RecipeList from '../components/RecipeList';
+
+const RecipesPage = props => {
+
+    const availableMeals = useSelector(state => state.meals.filteredMeals);
+
         return (
             <View style={styles.container}>
-                <Header
+                {/* <Header
                     leftComponent={<Icon name="menu"  style={{color:'white'}}  onPress={() => this.props.navigation.openDrawer()} />}
                     centerComponent={<Text style={{color:'white'}}>Salwaa's Menu Planner</Text>}
                     rightComponent={<Icon name="cart"  style={{color:'white'}} onPress={() => this.props.navigation.openDrawer()}/>} //this will be the buy more recipes navigation
-                />
+                /> */}
                
-                <Container>
+                {/* <Container>
                 <Content>
                 <Grid>
                         <Col style={{ }}><Text style={{fontSize:18, marginTop:10, marginLeft:10}}>RECIPES</Text></Col>
@@ -42,11 +49,30 @@ class RecipesPage extends Component {
                     </Grid>   
                   
                 </Content>
-            </Container>
+            </Container> */}
+
+<RecipeList listData={availableMeals} navigation={props.navigation} />
             </View>
         );
-    }
 }
+
+RecipesPage.navigationOptions = navData =>{
+    return {
+        headerTitle: "Recipes",
+        headerLeft: () =>
+          <HeaderButtons HeaderButtonComponent={HeaderButton}>
+            <Item
+              title="Menu"
+              iconName="ios-menu"
+              onPress={() => {
+                navData.navigation.toggleDrawer();
+              }}
+            />
+          </HeaderButtons>
+        
+      };
+}
+
 const styles = StyleSheet.create({
     container: {
         flex: 1
