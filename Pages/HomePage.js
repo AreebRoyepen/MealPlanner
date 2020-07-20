@@ -1,19 +1,23 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet,Image } from 'react-native';
+import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import { Header } from 'react-native-elements';
 import { Icon } from 'native-base';
 import { Card, Button  } from 'react-native-paper';
 
-class HomePage extends Component {
-    render() {
+import HeaderButton from '../components/HeaderButton';
+
+const HomePage = () => {
+
+
         return (
             <View style={styles.container}>
-                <Header style ={{width: 10}}
+                {/* <Header style ={{width: 10}}
                     backgroundColor ='black'
                     leftComponent={<Icon name="menu"  style={{color:'white'}}  onPress={() => this.props.navigation.openDrawer()} />}
                     centerComponent={<Text style={{color:'white'}}>Salwaa's Menu Planner</Text>}
                     rightComponent={<Icon name="cart"  style={{color:'white'}} onPress={() => this.props.navigation.openDrawer()}/>} //this will be the buy more recipes navigation
-                />
+                /> */}
               
               <Card.Title
                   title="Cape Malay and Other Recipes"
@@ -37,11 +41,32 @@ class HomePage extends Component {
               
             </View>
         );
-    }
+    
 }
+
+HomePage.navigationOptions = navData =>{
+    return {
+        headerTitle: "Salwaa's Menu Planner",
+        headerLeft: () =>
+          <HeaderButtons HeaderButtonComponent={HeaderButton}>
+            <Item
+              title="Menu"
+              iconName="ios-menu"
+              onPress={() => {
+                navData.navigation.toggleDrawer();
+              }}
+            />
+          </HeaderButtons>
+        
+      };
+}
+
+
 const styles = StyleSheet.create({
     container: {
         flex: 1
     }
 });
+
+
 export default HomePage;

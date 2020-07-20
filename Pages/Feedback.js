@@ -1,19 +1,21 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Header } from 'react-native-elements';
+import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import { Left, Right, Icon } from 'native-base';
 import {Title,Paragraph,TextInput, Button }from 'react-native-paper';
 
-class FeedbackPage extends Component {
-    render() {
+import HeaderButton from '../components/HeaderButton';
+
+const  FeedbackPage = () => {
         return (
             <View style={styles.container}>
-               <Header
+               {/* <Header
                    backgroundColor ='black'
                     leftComponent={<Icon name="menu"  style={{color:'white'}}  onPress={() => this.props.navigation.openDrawer()} />}
                     centerComponent={<Text style={{color:'white'}}>Salwaa's Menu Planner</Text>}
                     rightComponent={<Icon name="cart"  style={{color:'white'}} onPress={() => this.props.navigation.openDrawer()}/>} //this will be the buy more recipes navigation
-                />
+                /> */}
                 <View style={{ }} >
     
     <Title style={{ marginTop: 15,marginLeft:15, marginRight:15 }}>
@@ -43,8 +45,25 @@ class FeedbackPage extends Component {
     </View>
             </View>
         );
-    }
 }
+
+FeedbackPage.navigationOptions = navData =>{
+  return {
+      headerTitle: "Feedback",
+      headerLeft: () =>
+        <HeaderButtons HeaderButtonComponent={HeaderButton}>
+          <Item
+            title="Menu"
+            iconName="ios-menu"
+            onPress={() => {
+              navData.navigation.toggleDrawer();
+            }}
+          />
+        </HeaderButtons>
+      
+    };
+}
+
 const styles = StyleSheet.create({
     container: {
         flex: 1
