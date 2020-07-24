@@ -2,8 +2,8 @@
   "name": "MealPlanner_v1.00",
   "displayName": "MealPlanner_v1.00",
   "expo": {
-    "name": "MealPlanner_v1.00",
-    "slug": "MealPlanner_v1.00",
+    "name": "MealPlanner v1.00",
+    "slug": "MealPlanner",
     "version": "1.0.0",
     "assetBundlePatterns": [
       "**/*"
