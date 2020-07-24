@@ -4,33 +4,54 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  ImageBackground
+  ImageBackground,
+  Button
 } from 'react-native';
+import { useSelector, useDispatch } from "react-redux";
+
+import * as recipeActions from "../store/actions/recipes";
 
 // import DefaultText from './DefaultText';
 
 const RecipeItem = props => {
+
+
+  const recipe = props.recipe;
+
+
   return (
     <View style={styles.mealItem}>
-      <TouchableOpacity onPress={props.onSelectRecipe}>
+      <TouchableOpacity onPress={props.onSelectRecipe} onLongPress ={props.longPress}>
         <View>
           <View style={{ ...styles.mealRow, ...styles.mealHeader }}>
+          
             <ImageBackground
-              source={{ uri: props.image }}
+              source={{ uri: recipe.path }}
               style={styles.bgImage}
             >
+              <View style = {styles.buttonContainer}>
+              {/* <Button  onPress ={props.addRecipe} title = "ADD" /> */}
+              </View>
+              
               <View style={styles.titleContainer}>
+              
                 <Text style={styles.title} numberOfLines={1}>
-                  {props.title}
+                  {recipe.name}
                 </Text>
               </View>
             </ImageBackground>
           </View>
           <View style={{ ...styles.mealRow, ...styles.mealDetail }}>
-            <Text>{props.duration}m</Text>
-            <Text>{props.complexity.toUpperCase()}</Text>
-            <Text>{props.affordability.toUpperCase()}</Text>
+            {/* <Text>{recipe.duration}m</Text>
+            <Text>{recipe.complexity.toUpperCase()}</Text>
+            <Text>{recipe.affordability.toUpperCase()}</Text> */}
+
+            {/* <Text>{recipe.description}</Text>
+            <Text>{recipe.category}</Text> */}
+
+            
           </View>
+          
         </View>
       </TouchableOpacity>
     </View>
@@ -73,7 +94,13 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: 'white',
     textAlign: 'center'
-  }
+  },
+  buttonContainer : {
+    //width: "20%",
+    alignItems:"center",
+    backgroundColor:"transparent"
+  },
+
 });
 
 export default RecipeItem;
