@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import * as recipeActions from "../store/actions/recipes";
 import RecipeItem from "./RecipeItem";
 import Colors from "../constants/Colors";
+import { ActionSheet } from "native-base";
 
 const RecipeList = (props) => {
   const favoriteRecipes = useSelector((state) => state.recipes.favoriteRecipes);
@@ -15,6 +16,9 @@ const RecipeList = (props) => {
 
   const [error, setError] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const BUTTONS = ["Add to Favourites", "Add to Planner", "Cancel"];
+  const CANCEL_INDEX = 2;
 
   const loadRecipes = useCallback(async () => {
     setIsRefreshing(true);
@@ -64,6 +68,22 @@ const RecipeList = (props) => {
             },
           });
         }}
+        longPress={() => 
+          ActionSheet.show(
+            {
+              options: BUTTONS,
+              cancelButtonIndex: CANCEL_INDEX,
+              title: "Options"
+            },
+            buttonIndex => {
+              if(buttonIndex === 0){
+                dispatch(recipeActions.toggleFavorite(itemData.item.id));
+              }if(buttonIndex ===1){
+                dispatch(recipeActions.addToMyPlanner(itemData.item));
+              }
+            }
+          )
+        }
       />
     );
   };
