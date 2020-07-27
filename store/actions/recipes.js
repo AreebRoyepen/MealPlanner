@@ -26,9 +26,7 @@ export const getRecipes = () => {
   };
 };
 
-export const addToRecipes = (recipe) => {
-  console.log(recipe);
-
+export const addToMyPlanner = (recipe) => {
   return { type: ADD_TO_GROCERIES, recipe: recipe };
 };
 
