@@ -4,7 +4,6 @@ import { HeaderButtons, Item } from "react-navigation-header-buttons";
 
 import HeaderButton from "../components/HeaderButton";
 import RecipeList from "../components/RecipeList";
-import DefaultTextInput from "../components/DefaultTextInput";
 
 const RecipesPage = (props) => {
   
@@ -13,11 +12,7 @@ const RecipesPage = (props) => {
 
   return (
     <View style={styles.container}>
-        <DefaultTextInput 
-        label = "Search"
-        value = {search}
-        onChangeText = {(item)=> {setCurrentRecipes (recipes.filter((x) => {x.name.search(item.name)}))}}
-        />
+
       <RecipeList
       
       navigation={props.navigation}

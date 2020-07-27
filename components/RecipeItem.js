@@ -7,17 +7,10 @@ import {
   ImageBackground,
   Button
 } from 'react-native';
-import { useSelector, useDispatch } from "react-redux";
-
-import * as recipeActions from "../store/actions/recipes";
-
-// import DefaultText from './DefaultText';
 
 const RecipeItem = props => {
 
-
   const recipe = props.recipe;
-
 
   return (
     <View style={styles.recipeItem}>
