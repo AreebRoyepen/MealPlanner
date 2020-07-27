@@ -20,10 +20,10 @@ const RecipeItem = props => {
 
 
   return (
-    <View style={styles.mealItem}>
+    <View style={styles.recipeItem}>
       <TouchableOpacity onPress={props.onSelectRecipe} onLongPress ={props.longPress}>
         <View>
-          <View style={{ ...styles.mealRow, ...styles.mealHeader }}>
+          <View style={{ ...styles.row, ...styles.header }}>
           
             <ImageBackground
               source={{ uri: recipe.path }}
@@ -41,15 +41,9 @@ const RecipeItem = props => {
               </View>
             </ImageBackground>
           </View>
-          <View style={{ ...styles.mealRow, ...styles.mealDetail }}>
-            {/* <Text>{recipe.duration}m</Text>
-            <Text>{recipe.complexity.toUpperCase()}</Text>
-            <Text>{recipe.affordability.toUpperCase()}</Text> */}
-
+          <View style={{ ...styles.row, ...styles.details }}>
             {/* <Text>{recipe.description}</Text>
-            <Text>{recipe.category}</Text> */}
-
-            
+            <Text>{recipe.category}</Text> */}            
           </View>
           
         </View>
@@ -59,7 +53,7 @@ const RecipeItem = props => {
 };
 
 const styles = StyleSheet.create({
-  mealItem: {
+  recipeItem: {
     height: 200,
     width: '100%',
     backgroundColor: '#f5f5f5',
@@ -72,13 +66,13 @@ const styles = StyleSheet.create({
     height: '100%',
     justifyContent: 'flex-end',
   },
-  mealRow: {
+  row: {
     flexDirection: 'row'
   },
-  mealHeader: {
+  header: {
     height: '85%'
   },
-  mealDetail: {
+  details: {
     paddingHorizontal: 10,
     justifyContent: 'space-between',
     alignItems: 'center',
