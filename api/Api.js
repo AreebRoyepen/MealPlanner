@@ -46,7 +46,7 @@ export async function fetchSteps(id) {
 
 export async function fetchInventory(param) {
   try {
-    let resp = await fetch(API_BASE + "/v2/inventory/" + param, {headers});
+    let resp = await fetch(API_BASE + "/v1/inventory/" + param, {headers});
 
     let data = await resp.json();
 
