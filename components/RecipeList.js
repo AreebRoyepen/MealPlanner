@@ -1,16 +1,21 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { View, FlatList, StyleSheet, ActivityIndicator } from "react-native";
+import { View, FlatList, StyleSheet, ActivityIndicator, Text } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 
 import * as recipeActions from "../store/actions/recipes";
 import RecipeItem from "./RecipeItem";
 import Colors from "../constants/Colors";
 import { ActionSheet } from "native-base";
+import SearchBox from "./SearchBox";
 
 const RecipeList = (props) => {
+
   const favoriteRecipes = useSelector((state) => state.recipes.favoriteRecipes);
 
-  const recipes = useSelector((state) => state.recipes.recipes);
+  const initialRecipes = useSelector((state) => state.recipes.recipes);
+  const [filteredRecipes, setFilteredRecipes] = useState(initialRecipes);
+  const [searchWord, setSearchWord] = useState();
+
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -24,6 +29,7 @@ const RecipeList = (props) => {
     setIsRefreshing(true);
     try {
       dispatch(recipeActions.getRecipes());
+      setFilteredRecipes(initialRecipes)
     } catch (err) {
       console.log(err);
       setError(true);
@@ -39,12 +45,13 @@ const RecipeList = (props) => {
     };
   }, [loadRecipes]);
 
-  useEffect(() => {
-    setIsLoading(true);
-    loadRecipes().then(() => {
-      setIsLoading(false);
-    });
-  }, [dispatch, loadRecipes]);
+  // useEffect(() => {
+  //   setIsLoading(true);
+  //   loadRecipes().then(() => {
+  //     setFilteredRecipes(initialRecipes)
+  //     setIsLoading(false);
+  //   });
+  // }, [dispatch, loadRecipes]);
 
   const renderMealItem = (itemData) => {
     const isFavorite = favoriteRecipes.some(
@@ -88,12 +95,24 @@ const RecipeList = (props) => {
     );
   };
 
+  const searchRecipes = (text) => {
+
+    setSearchWord(text)
+
+    const filteredList = initialRecipes.filter((item) => { return item.name.search(text) >-1 })
+
+    setFilteredRecipes(filteredList)
+
+  }
+
   return (
     <View style={styles.list}>
       <FlatList
+      //ListEmptyComponent = {() => <Text>Loading ... </Text>}
+      ListHeaderComponent = {<SearchBox value = {searchWord} onChangeText = {(text) => searchRecipes(text)}  />}
         onRefresh={loadRecipes}
         refreshing={isRefreshing}
-        data={recipes}
+        data={initialRecipes}
         keyExtractor={(item, index) => item.id.toString()}
         renderItem={renderMealItem}
         style={{ width: "100%" }}
