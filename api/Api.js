@@ -7,11 +7,14 @@ const headers = {
 
 export async function fetchRecipes() {
   try {
+
     let resp = await fetch(API_BASE + "/v2/recipes", {headers});
 
-    let data = await resp.json();
+    if(resp.status === 200){
+      let data = await resp.json();
 
-    return data;
+      return data;
+    }
   } catch (err) {
     console.log("THERE HAS BEEN AN ERROR");
     console.log(err);
