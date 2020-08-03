@@ -12,10 +12,11 @@ import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import { useSelector, useDispatch } from "react-redux";
 
 import HeaderButton from "../components/HeaderButton";
-import { toggleFavorite } from "../store/actions/recipes";
 import Colors from "../constants/Colors";
 import { fetchIngredients, fetchSteps } from "../api/Api";
 import ListItem from "../components/ListItem";
+
+import * as recipeActions from "../store/actions/recipes";
 
 const RecipeDatailPage = (props) => {
 
@@ -75,13 +76,23 @@ const RecipeDatailPage = (props) => {
   }, [loadDetails]);
 
   const toggleFavoriteHandler = useCallback(() => {
-    dispatch(toggleFavorite(recipe.id));
+    dispatch(recipeActions.toggleFavorite(recipe.id));
+  }, [dispatch, recipe]);
+
+  useEffect(() => {
+    props.navigation.setParams({ toggleFav: toggleFavoriteHandler });
+  }, [toggleFavoriteHandler]);
+
+
+  const addToPlannerHandler = useCallback(() => {
+    dispatch(recipeActions.addToMyPlanner(recipe))
   }, [dispatch, recipe]);
 
   useEffect(() => {
     // props.navigation.setParams({ recipeTitle: selectedRecipe.title });
-    props.navigation.setParams({ toggleFav: toggleFavoriteHandler });
-  }, [toggleFavoriteHandler]);
+    props.navigation.setParams({ addToPlanner: addToPlannerHandler });
+  }, [addToPlannerHandler]);
+
 
   useEffect(() => {
     props.navigation.setParams({ isFav: currentRecipeIsFavorite });
@@ -100,7 +111,7 @@ const RecipeDatailPage = (props) => {
       <Image source={{ uri: recipe.path }} style={styles.image} />
       <View style={styles.details}>
         <Text>{recipe.description}</Text>
-        <Text>{recipe.category}</Text>
+        {/* <Text>{recipe.category}</Text> */}
       </View>
       <Text style={styles.title}>Ingredients</Text>
 
@@ -154,18 +165,26 @@ const RecipeDatailPage = (props) => {
 
 RecipeDatailPage.navigationOptions = (navigationData) => {
   // const id = navigationData.navigation.getParam('id');
-  const recipeTitle = navigationData.navigation.getParam("recipeTitle");
+  //const recipeTitle = navigationData.navigation.getParam("recipeTitle");
+  const recipe = navigationData.navigation.getParam("recipe");
+  addToPlanner
+  const addToPlanner = navigationData.navigation.getParam("addToPlanner");
   const toggleFavorite = navigationData.navigation.getParam("toggleFav");
   const isFavorite = navigationData.navigation.getParam("isFav");
   // const selectedRecipe = MEALS.find(recipe => recipe.id === id);
   return {
-    headerTitle: recipeTitle,
+    headerTitle: recipe.title,
     headerRight: () => (
       <HeaderButtons HeaderButtonComponent={HeaderButton}>
         <Item
           title="Favorite"
           iconName={isFavorite ? "ios-star" : "ios-star-outline"}
           onPress={toggleFavorite}
+        />
+        <Item
+          title="Add to Planner"
+          iconName={"ios-calendar"}
+          onPress={addToPlanner}
         />
       </HeaderButtons>
     ),
