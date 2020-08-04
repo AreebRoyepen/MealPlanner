@@ -22,9 +22,6 @@ const RecipeItem = props => {
               source={{ uri: recipe.path }}
               style={styles.bgImage}
             >
-              <View style = {styles.buttonContainer}>
-              {/* <Button  onPress ={props.addRecipe} title = "ADD" /> */}
-              </View>
               
               <View style={styles.titleContainer}>
               

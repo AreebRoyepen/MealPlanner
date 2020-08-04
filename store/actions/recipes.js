@@ -3,6 +3,7 @@ export const TOGGLE_FAVORITE = "TOGGLE_FAVORITE";
 export const SET_FILTERS = "SET_FILTERS";
 export const GET_RECIPES = "GET_RECIPES";
 export const ADD_TO_GROCERIES = "ADD_TO_GROCERIES";
+export const ADD_TO_INGREDIENTS_LIST = "ADD_TO_INGREDIENTS_LIST";
 
 export const getRecipes = () => {
   return async (dispatch) => {
@@ -37,3 +38,9 @@ export const toggleFavorite = (id) => {
 export const setFilters = (filterSettings) => {
   return { type: SET_FILTERS, filters: filterSettings };
 };
+
+export const addToIngredientsList = (x) => {
+
+  return {type: ADD_TO_INGREDIENTS_LIST, ingredients : x};
+
+}
