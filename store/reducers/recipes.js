@@ -1,5 +1,5 @@
 //import { MEALS } from '../../data/dummy-data';
-import { TOGGLE_FAVORITE, SET_FILTERS, GET_RECIPES, ADD_TO_GROCERIES, ADD_TO_INGREDIENTS_LIST } from '../actions/recipes';
+import { TOGGLE_FAVORITE, SET_FILTERS, GET_RECIPES, ADD_TO_GROCERIES, ADD_TO_INGREDIENTS_LIST, EDIT_INGREDIENTS_LIST } from '../actions/recipes';
 
 const initialState = {
   recipes: new Array(0),
@@ -26,7 +26,31 @@ const recipesReducer = (state = initialState, action) => {
 
     case ADD_TO_INGREDIENTS_LIST:
 
-      return {...state , ingredientsList: action.ingredients  }
+      let newList = [];
+
+      action.ingredients.forEach((incomingListItem) => {
+        if (
+          state.ingredientsList.findIndex((currentListItem) => {
+            if (
+              currentListItem.ingredient == incomingListItem.ingredient &&
+              currentListItem.quantity == incomingListItem.quantity &&
+              currentListItem.checked === true
+            ) {
+              return true;
+            }
+          }) > -1
+        ) {
+          newList.push({ ...incomingListItem, checked: true });
+        } else {
+          newList.push(incomingListItem);
+        }
+      });
+
+      return {...state , ingredientsList:  newList }
+
+    case EDIT_INGREDIENTS_LIST:
+
+      return {...state , ingredientsList:  action.ingredients }
 
     case TOGGLE_FAVORITE:
 

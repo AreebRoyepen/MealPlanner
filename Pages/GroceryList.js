@@ -25,6 +25,7 @@ import { TouchableOpacity, ScrollView } from "react-native-gesture-handler";
 import { startClock } from "react-native-reanimated";
 
 const GroceryListPage = (props) => {
+
   const recipes = useSelector((state) => state.recipes.selectedRecipes);
   const [error, setError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -58,6 +59,8 @@ const GroceryListPage = (props) => {
   const getList = useCallback(async () => {
     let param = "";
     
+    console.log("THESE ARE THE RECIPES")
+    
     console.log(recipes)
 
     for (let x of recipes) {
@@ -77,7 +80,7 @@ const GroceryListPage = (props) => {
       } else {
         console.log(resp);
 
-        list = Object.entries(resp).map(([key, value]) => [key, value, false]);
+        list = Object.entries(resp).map(([key, value]) => ({ingredient: key, quantity: value, checked:false}));
 
         //setGroceries(list);
 
@@ -92,7 +95,7 @@ const GroceryListPage = (props) => {
     } finally {
       setIsRefreshing(false);
     }
-  }, [dispatch]);
+  }, [recipes]);
 
   useEffect(() => {
     const willFocusSub = props.navigation.addListener("willFocus", getList);
@@ -117,7 +120,7 @@ const GroceryListPage = (props) => {
 
     let item = currentGroceries[index];
 
-    item[2] = !item[2];
+    item.checked = !item.checked;
 
     currentGroceries[index] = item;
     // currentGroceries.pop(index)
@@ -125,7 +128,7 @@ const GroceryListPage = (props) => {
     currentCheckedGroceries.push(item);
     setCheckedGroceries(currentCheckedGroceries);
 
-    dispatch(recipeActions.addToIngredientsList(currentGroceries));
+    dispatch(recipeActions.editIngredientsList(currentGroceries));
 
   };
 
@@ -222,15 +225,15 @@ const GroceryListPage = (props) => {
         onRefresh={getList}
         refreshing={isRefreshing}
         data={groceries}
-        keyExtractor={(item, index) => item[0]}
+        keyExtractor={(item, index) => item.ingredient}
         renderItem={(x) => (
           <ChecklistItem
             onPress={() => checkItem(x.item)}
             checked={
-              groceries[groceries.findIndex((item) => item === x.item)][2]
+              groceries[groceries.findIndex((item) => item === x.item)].checked
             }
           >
-            {x.item[0] + " " + x.item[1]}
+            {x.item.ingredient + " " + x.item.quantity}
           </ChecklistItem>
         )}
         extraData={checkedGroceries || groceries}
