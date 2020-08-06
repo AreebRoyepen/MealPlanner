@@ -34,8 +34,8 @@ const GroceryListPage = (props) => {
   const [openStartDate, setOpenStartDate] = useState(false);
   const [openEndDate, setOpenEndDate] = useState(false);
 
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
+  const [startDate, setStartDate] = useState();
+  const [endDate, setEndDate] = useState();
 
   const groceries = useSelector((state) => state.recipes.ingredientsList);
   const [checkedGroceries, setCheckedGroceries] = useState([]);
@@ -188,7 +188,7 @@ const GroceryListPage = (props) => {
             
             <View style = {styles.row}>
             <TouchableOpacity style = {styles.textContainer} onPress={() => setOpenStartDate(!openStartDate)} >
-              <Text style = {styles.dateText}>{startDate.toDateString()}</Text>
+              <Text style = {styles.dateText}>{ startDate ?  startDate.toDateString() : "Start Date" }</Text>
             </TouchableOpacity>
             </View>
 
@@ -198,7 +198,7 @@ const GroceryListPage = (props) => {
 
             <View style = {styles.row}>
             <TouchableOpacity style = {styles.textContainer} onPress={() => setOpenEndDate(!openEndDate)} >
-              <Text style = {styles.dateText} >{endDate.toDateString()}</Text>
+              <Text style = {styles.dateText} >{ endDate ? endDate.toDateString() : "End Date" }</Text>
             </TouchableOpacity>
             </View>
 
@@ -232,7 +232,7 @@ const GroceryListPage = (props) => {
 
 {openStartDate && (
         <DateTimePicker
-          value={startDate}
+          value={startDate ? startDate : new Date() }
           mode={"date"}
           is24Hour={true}
           display="spinner"
@@ -243,7 +243,7 @@ const GroceryListPage = (props) => {
 {openEndDate && (
         <DateTimePicker
         minimumDate = {startDate}
-          value={endDate}
+          value={endDate ? endDate : new Date() }
           mode={"date"}
           is24Hour={true}
           display="spinner"
