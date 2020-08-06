@@ -10,7 +10,7 @@ import * as recipeActions from "../store/actions/recipes"
 
 const RecipesPage = (props) => {
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   
   useEffect(()=>{
     dispatch(recipeActions.getRecipes());

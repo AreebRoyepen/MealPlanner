@@ -165,9 +165,10 @@ const GroceryListPage = (props) => {
     </View>
   ) : error === true ? (
     <ScrollView
-    
+    contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
     refreshControl={
       <RefreshControl
+      
         refreshing={isLoading}
         onRefresh={getList}
       />
@@ -175,18 +176,6 @@ const GroceryListPage = (props) => {
 
     >
 <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-                <View style={styles.textboxContainer}>
-            {/* <View style={{ textAlign: "center" }}>
-              <Text style={{ textAlignVertical: "center" }}> to </Text>
-            </View> */}
-
-            {/* <Button transparent onPress={getList}>
-              <Icon
-                name="ios-funnel"
-                style={{ fontSize: 20, color: Colors.buttonColor }}
-              />
-            </Button> */}
-          </View>
       <Text>You have not selected any recipes</Text>
     </View>
     </ScrollView>
