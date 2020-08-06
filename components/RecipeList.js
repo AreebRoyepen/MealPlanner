@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import * as recipeActions from "../store/actions/recipes";
 import RecipeItem from "./RecipeItem";
 import Colors from "../constants/Colors";
-import { ActionSheet } from "native-base";
+import { ActionSheet, Toast } from "native-base";
 import SearchBox from "./SearchBox";
 
 const RecipeList = (props) => {
@@ -22,12 +22,10 @@ const RecipeList = (props) => {
   const [error, setError] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const BUTTONS = ["Add to Favourites", "Add to Planner", "Cancel"];
-  const CANCEL_INDEX = 2;
-
   const loadRecipes = useCallback(async () => {
     setIsRefreshing(true);
     try {
+      setIsLoading(true)
       dispatch(recipeActions.getRecipes());
       setFilteredRecipes(initialRecipes)
     } catch (err) {
@@ -35,6 +33,7 @@ const RecipeList = (props) => {
       setError(true);
     }
     setIsRefreshing(false);
+    setIsLoading(false)
   }, [isRefreshing, dispatch, error]);
 
   useEffect(() => {
@@ -78,13 +77,17 @@ const RecipeList = (props) => {
         longPress={() => 
           ActionSheet.show(
             {
-              options: BUTTONS,
-              cancelButtonIndex: CANCEL_INDEX,
+              options: [isFavorite ? "Remove from Favourites" : "Add to Favourites" , "Add to Planner", "Cancel"],
+              cancelButtonIndex: 2,
               title: "Options"
             },
             buttonIndex => {
               if(buttonIndex === 0){
                 dispatch(recipeActions.toggleFavorite(itemData.item.id));
+                Toast.show({
+                  text: isFavorite ? "Removed from Favorites" : "Recipe Added to Favorites",
+                  duration: 3000                  
+                });
               }if(buttonIndex ===1){
                 dispatch(recipeActions.addToMyPlanner(itemData.item));
               }
