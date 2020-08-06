@@ -13,7 +13,7 @@ const RecipeList = (props) => {
   const favoriteRecipes = useSelector((state) => state.recipes.favoriteRecipes);
 
   const initialRecipes = useSelector((state) => state.recipes.recipes);
-  const [filteredRecipes, setFilteredRecipes] = useState(initialRecipes);
+  const [filteredRecipes, setFilteredRecipes] = useState();
   const [searchWord, setSearchWord] = useState();
 
   const dispatch = useDispatch();
@@ -26,15 +26,15 @@ const RecipeList = (props) => {
     setIsRefreshing(true);
     try {
       setIsLoading(true)
-      dispatch(recipeActions.getRecipes());
-      setFilteredRecipes(initialRecipes)
+      await dispatch(recipeActions.getRecipes());
+      setFilteredRecipes(initialRecipes);
     } catch (err) {
       console.log(err);
       setError(true);
     }
     setIsRefreshing(false);
     setIsLoading(false)
-  }, [isRefreshing, dispatch, error]);
+  }, [dispatch, initialRecipes, filteredRecipes]);
 
   useEffect(() => {
     const willFocusSub = props.navigation.addListener("willFocus", loadRecipes);
@@ -44,24 +44,32 @@ const RecipeList = (props) => {
     };
   }, [loadRecipes]);
 
-  // useEffect(() => {
-  //   setIsLoading(true);
-  //   loadRecipes().then(() => {
-  //     setFilteredRecipes(initialRecipes)
-  //     setIsLoading(false);
-  //   });
-  // }, [dispatch, loadRecipes]);
+  useEffect(() => {
+    setIsLoading(true);
+    loadRecipes().then(() => {
+      setFilteredRecipes(initialRecipes);
+      setIsLoading(false);
+    });
+  }, [dispatch]);
+
+  useEffect(() => {
+
+    setFilteredRecipes(initialRecipes);
+
+  }, [initialRecipes]);
 
   const renderMealItem = (itemData) => {
     const isFavorite = favoriteRecipes.some(
       (meal) => meal.id === itemData.item.id
     );
 
-    return isLoading ? (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color={Colors.primaryColor} />
-      </View>
-    ) : (
+    //return 
+    // isLoading ? (
+    //   <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+    //     <ActivityIndicator size="large" color={Colors.primaryColor} />
+    //   </View>
+    // ) : 
+    return (
       <RecipeItem
         recipe={itemData.item}
         onSelectRecipe={() => {
@@ -115,10 +123,11 @@ const RecipeList = (props) => {
       ListHeaderComponent = {<SearchBox value = {searchWord} onChangeText = {(text) => searchRecipes(text)}  />}
         onRefresh={loadRecipes}
         refreshing={isRefreshing}
-        data={initialRecipes}
+        data={filteredRecipes}
         keyExtractor={(item, index) => item.id.toString()}
         renderItem={renderMealItem}
         style={{ width: "100%" }}
+        extraData = {initialRecipes}
       />
     </View>
   );
