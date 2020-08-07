@@ -3,7 +3,6 @@ import { View, Text, StyleSheet } from 'react-native';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import { Header } from 'react-native-elements';
 import { Left, Right, Icon } from 'native-base';
-import { Agenda } from "react-native-calendars";
 
 import HeaderButton from '../components/HeaderButton';
 import AgendaItem from "../components/AgendaItem";
@@ -29,7 +28,7 @@ const PlannerPage = () => {
         return (
             <View style={styles.container}>
 
-                <Agenda
+                {/* <Agenda
                 
                 items={{
                   '2020-07-22': [{name: 'item 1 - any js object'}],
@@ -78,7 +77,7 @@ const PlannerPage = () => {
                   agendaKnobColor: 'black'
                 }}
 
-                />
+                /> */}
 
             </View>
         );

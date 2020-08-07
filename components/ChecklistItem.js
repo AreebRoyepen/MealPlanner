@@ -8,19 +8,17 @@ const ChecklistItem = (props) => {
         <ListItem>
             <CheckBox checked={props.checked} color = {Colors.buttonColor} onPress = {props.onPress}/>
             <Body style = {{paddingLeft : 10}}>
-            <Text selectable >{props.children}</Text>
+            <Text selectable style = {props.checked && styles.checkedItem} >{props.children}</Text>
             </Body>
           </ListItem>
     );
   };
 
   const styles = StyleSheet.create({
-    listItem: {    
-      marginVertical: 10,
-      marginHorizontal: 20,
-      borderColor: "#ccc",
-      borderWidth: 1,
-      padding: 10,
+    checkedItem: {    
+      textDecorationLine: 'line-through',
+      textDecorationStyle: 'solid',
+      color: "grey"
     },
   });
 

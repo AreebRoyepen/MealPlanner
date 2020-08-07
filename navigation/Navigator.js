@@ -4,13 +4,13 @@ import {createDrawerNavigator} from 'react-navigation-drawer';
 
 import {createStackNavigator} from 'react-navigation-stack';
 import {createAppContainer} from 'react-navigation';
-import HomePage from '../Pages/HomePage';
-import FeedbackPage from '../Pages/Feedback';
-import GroceryListPage from '../Pages/GroceryList';
-import PlannerPage from '../Pages/Planner';
-import  RecipesPage from '../Pages/Recipes';
+import HomePage from '../pages/HomePage';
+import FeedbackPage from '../pages/Feedback';
+import GroceryListPage from '../pages/GroceryList';
+import PlannerPage from '../pages/Planner';
+import  RecipesPage from '../pages/Recipes';
 import Colors from '../constants/Colors';
-import RecipeDatailPage from '../Pages/RecipeDatailPage';
+import RecipeDatailPage from '../pages/RecipeDatailPage';
 
 const defaultStackNavOptions = {
   headerStyle: {
