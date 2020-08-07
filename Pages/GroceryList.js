@@ -3,10 +3,9 @@ import {
   View,
   Text,
   StyleSheet,
-  FlatList,
-  //Button,
   ActivityIndicator,
   RefreshControl,
+  SectionList,
 } from "react-native";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 
@@ -20,12 +19,10 @@ import Colors from "../constants/Colors";
 
 import * as recipeActions from "../store/actions/recipes";
 
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { TouchableOpacity, ScrollView } from "react-native-gesture-handler";
-import { startClock } from "react-native-reanimated";
 
 const GroceryListPage = (props) => {
-
   const recipes = useSelector((state) => state.recipes.selectedRecipes);
   const [error, setError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -37,8 +34,7 @@ const GroceryListPage = (props) => {
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState();
 
-  const groceries = useSelector((state) => state.recipes.ingredientsList);
-  const [checkedGroceries, setCheckedGroceries] = useState([]);
+  const groceries = useSelector((state) => state.recipes.ingredientsList );
 
   const dispatch = useDispatch();
 
@@ -58,35 +54,29 @@ const GroceryListPage = (props) => {
 
   const getList = useCallback(async () => {
     let param = "";
-    
-    console.log("THESE ARE THE RECIPES")
-    
-    console.log(recipes)
 
     for (let x of recipes) {
       param = param + x.id + ",";
     }
 
     setIsRefreshing(true);
-    console.log(param)
+
     try {
       let resp = await fetchInventory(param);
       let list = [];
 
       if (resp.error) {
-        console.log("ERROR FOR GROCERIES")
+        console.log("ERROR FOR GROCERIES");
         console.log(resp);
         setError(true);
       } else {
-        console.log(resp);
-
-        list = Object.entries(resp).map(([key, value]) => ({ingredient: key, quantity: value, checked:false}));
-
-        //setGroceries(list);
+        list = Object.entries(resp).map(([key, value]) => ({
+          ingredient: key,
+          quantity: value,
+          checked: false,
+        }));
 
         dispatch(recipeActions.addToIngredientsList(list));
-
-        console.log(list);
 
         setError(false);
       }
@@ -98,66 +88,47 @@ const GroceryListPage = (props) => {
   }, [recipes]);
 
   useEffect(() => {
-    const willFocusSub = props.navigation.addListener("willFocus", getList);
+    const willFocusSub = props.navigation.addListener("willFocus", getList);    
 
     return () => {
       willFocusSub.remove();
     };
   }, [getList]);
 
-  useEffect(() => {
-    setIsLoading(true);
-    getList();
-    setIsLoading(false);
-  }, [getList]);
+  // useEffect(() => {
+  //   setIsLoading(true);
+  //   getList();
+  //   setIsLoading(false);
+  // }, [getList]);
 
   const checkItem = (x) => {
 
-    const currentGroceries = [...groceries]
+    const currentGroceries = [...groceries];
     const index = currentGroceries.findIndex((item) => item === x);
-
-    const currentCheckedGroceries = [...checkedGroceries]
 
     let item = currentGroceries[index];
 
     item.checked = !item.checked;
 
     currentGroceries[index] = item;
-    // currentGroceries.pop(index)
-    console.log(item);
-    currentCheckedGroceries.push(item);
-    setCheckedGroceries(currentCheckedGroceries);
 
     dispatch(recipeActions.editIngredientsList(currentGroceries));
 
   };
 
-  const isChecked = (x) => {
-    const index = groceries.findIndex((item) => item === x);
-
-    const item = groceries[index];
-
-    return item[2];
+  const startDateHandler = (event, date) => {
+    if (event.type !== "dismissed") {
+      setOpenStartDate(false);
+      setStartDate(date);
+    }
   };
 
-
-  const startDateHandler = (event, date) => {
-    if(event.type !== "dismissed"){
-      setOpenStartDate(false)
-      setStartDate(date)
-    }
-  }
-  
   const endDateHandler = (event, date) => {
-
-    if(event.type !== "dismissed"){
-      setOpenEndDate(false)
-      setEndDate(date)
+    if (event.type !== "dismissed") {
+      setOpenEndDate(false);
+      setEndDate(date);
     }
-    
-    
-  }
-
+  };
 
   return isLoading ? (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -165,92 +136,101 @@ const GroceryListPage = (props) => {
     </View>
   ) : error === true ? (
     <ScrollView
-    contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
-    refreshControl={
-      <RefreshControl
-      
-        refreshing={isLoading}
-        onRefresh={getList}
-      />
-    }
-
+      contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
+      refreshControl={
+        <RefreshControl refreshing={isLoading} onRefresh={getList} />
+      }
     >
-<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>You have not selected any recipes</Text>
-    </View>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>You have not selected any recipes</Text>
+      </View>
     </ScrollView>
-    
   ) : (
-    <View style={styles.container}>
-      <FlatList
-        ListHeaderComponent={
-          <View style={styles.textboxContainer}>
-            
-            <View style = {styles.row}>
-            <TouchableOpacity style = {styles.textContainer} onPress={() => setOpenStartDate(!openStartDate)} >
-              <Text style = {styles.dateText}>{ startDate ?  startDate.toDateString() : "Start Date" }</Text>
-            </TouchableOpacity>
+      <View style={styles.mainList}>
+        <SectionList
+          ListHeaderComponent={
+            <View style={styles.textboxContainer}>
+              <View style={styles.row}>
+                <TouchableOpacity
+                  style={styles.textContainer}
+                  onPress={() => setOpenStartDate(!openStartDate)}
+                >
+                  <Text style={styles.dateText}>
+                    {startDate ? startDate.toDateString() : "Start Date"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.row}>
+                <Text> to </Text>
+              </View>
+
+              <View style={styles.row}>
+                <TouchableOpacity
+                  style={styles.textContainer}
+                  onPress={() => setOpenEndDate(!openEndDate)}
+                >
+                  <Text style={styles.dateText}>
+                    {endDate ? endDate.toDateString() : "End Date"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              <Button transparent onPress={getList}>
+                <Icon
+                  name="ios-funnel"
+                  style={{ fontSize: 20, color: Colors.buttonColor }}
+                />
+              </Button>
             </View>
+          }
+          // renderSectionHeader={({ section: { title } }) => (
+          //   <Text >{title}</Text>
+          // )}
+          renderSectionFooter = {() => <View style ={{marginVertical : 10}}></View> }
+          onRefresh={getList}
+          refreshing={isRefreshing}
+          sections={[{title: "checked", data :groceries.filter((item) => {return item.checked === false})}, 
+                      {title:"unchecked", data : groceries.filter((item) => {return item.checked === true})}]}
+          keyExtractor={(item, index) => item.ingredient}
+          renderItem={(x) => (
+            <ChecklistItem
+              onPress={() => checkItem(x.item)}
+              checked={
+                groceries[groceries.findIndex((item) => item === x.item)]
+                  .checked
+              }
+            >
+              {x.item.ingredient + " " + x.item.quantity}
+            </ChecklistItem>
+          )}
+          extraData={groceries}
+          style={{ width: "100%" }}
+        />
 
-            <View style={styles.row}>
-              <Text> to </Text>
-            </View>
-
-            <View style = {styles.row}>
-            <TouchableOpacity style = {styles.textContainer} onPress={() => setOpenEndDate(!openEndDate)} >
-              <Text style = {styles.dateText} >{ endDate ? endDate.toDateString() : "End Date" }</Text>
-            </TouchableOpacity>
-            </View>
-
-            <Button transparent onPress={getList}>
-              <Icon
-                name="ios-funnel"
-                style={{ fontSize: 20, color: Colors.buttonColor }}
-              />
-            </Button>
-
-          </View>
-        }
-        onRefresh={getList}
-        refreshing={isRefreshing}
-        data={groceries}
-        keyExtractor={(item, index) => item.ingredient}
-        renderItem={(x) => (
-          <ChecklistItem
-            onPress={() => checkItem(x.item)}
-            checked={
-              groceries[groceries.findIndex((item) => item === x.item)].checked
-            }
-          >
-            {x.item.ingredient + " " + x.item.quantity}
-          </ChecklistItem>
+        {openStartDate && (
+          <DateTimePicker
+            value={startDate ? startDate : new Date()}
+            mode={"date"}
+            is24Hour={true}
+            display="spinner"
+            onChange={startDateHandler}
+          />
         )}
-        extraData={checkedGroceries || groceries}
-        style={{ width: "100%" }}
-      />
 
+        {openEndDate && (
+          <DateTimePicker
+            minimumDate={startDate}
+            value={endDate ? endDate : new Date()}
+            mode={"date"}
+            is24Hour={true}
+            display="spinner"
+            onChange={endDateHandler}
+          />
+        )}
+      </View>
 
-{openStartDate && (
-        <DateTimePicker
-          value={startDate ? startDate : new Date() }
-          mode={"date"}
-          is24Hour={true}
-          display="spinner"
-          onChange={startDateHandler}
-        />
-      )}
-
-{openEndDate && (
-        <DateTimePicker
-        minimumDate = {startDate}
-          value={endDate ? endDate : new Date() }
-          mode={"date"}
-          is24Hour={true}
-          display="spinner"
-          onChange={endDateHandler}
-        />
-      )}
-    </View>
+      
   );
 };
 
@@ -272,29 +252,31 @@ GroceryListPage.navigationOptions = (navData) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  mainList: {
+    flexGrow: 1,
+  },
+  checkedList: {
+    flexGrow: 1,
   },
   textboxContainer: {
     margin: 10,
     flexDirection: "row",
     //backgroundColor: "grey",
-    justifyContent: "center"
+    justifyContent: "center",
   },
   row: {
-    justifyContent: 'center', 
-    alignItems: 'center',
-    
+    justifyContent: "center",
+    alignItems: "center",
   },
   textContainer: {
     textAlignVertical: "center",
     shadowOpacity: 20,
-    paddingHorizontal: 20
+    paddingHorizontal: 20,
   },
   dateText: {
-    color:Colors.primaryColor,
-    fontStyle:"italic",
-    fontWeight: "bold"
-  }
+    color: Colors.primaryColor,
+    fontStyle: "italic",
+    fontWeight: "bold",
+  },
 });
 export default GroceryListPage;
