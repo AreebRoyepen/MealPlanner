@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Button, Alert } from 'react-native';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import { Header } from 'react-native-elements';
 import { Left, Right, Icon } from 'native-base';
@@ -7,12 +7,17 @@ import { Left, Right, Icon } from 'native-base';
 import HeaderButton from '../components/HeaderButton';
 import AgendaItem from "../components/AgendaItem";
 
+import * as Calendar from 'expo-calendar';
+import * as Permissions from 'expo-permissions';
+import Colors from '../constants/Colors';
+
 const PlannerPage = () => {
+
+  const [calendarID, setCalendarID] = useState()
 
   function getMinDate(){
 
     var x = new Date();
-    x.setDate(1);
     x.setMonth(x.getMonth()-1);
     return x
   }
@@ -20,65 +25,97 @@ const PlannerPage = () => {
   function getMaxDate(){
 
     var x = new Date();
-    x.setDate(1);
     x.setMonth(x.getMonth()+ 12);
     return x
+  }
+  useEffect(() => {
+    (async () => {
+      const { status } = await Calendar.requestCalendarPermissionsAsync();
+      if (status === 'granted') {
+        const calendars = await Calendar.getCalendarsAsync();
+        console.log('Here are all your calendars:');
+        if(calendars.length !== 0){
+          
+          console.log( {calendars} )
+        } else{
+          
+        Alert.alert("You have no calendars, create one to add events")
+        }
+        
+      }
+    })();
+
+  });
+
+  const deleteHandler = () => {
+
+    (async () => {await Calendar.deleteCalendarAsync("1")} )();
+    
+  }
+
+  const createCalendar = () => { 
+
+    (async () => {
+      let details = {
+        title : "test calendar",
+        color : Colors.primaryColor,
+        source : {
+          isLocalAccount : true,
+          name: 'test'
+        },
+        name: "expo calendar",
+        ownerAccount: "bleh",
+        accessLevel: "owner"
+      }
+
+      let x = await Calendar.createCalendarAsync(details);
+      console.log(x);
+      setCalendarID(x)
+    })();
+
+  }
+
+  const addEvent = () => {
+
+    (async () => {
+      let details = {
+
+        title : "test",
+        startDate : new Date(),
+        endDate : new Date()
+  
+      }
+  
+      let x = await Calendar.createEventAsync("1", details);
+    })();
+    
+
+  }
+
+  const logEvents = () => {
+
+    (async () => {
+
+  
+      let x = await Calendar.getEventAsync("1", new Date(), new Date());
+      console.log(x)
+    })();
+
   }
 
         return (
             <View style={styles.container}>
 
-                {/* <Agenda
+                <View style = {styles.buttons}> 
+
                 
-                items={{
-                  '2020-07-22': [{name: 'item 1 - any js object'}],
-                  '2020-07-23': [{name: 'item 2 - any js object', height: 80}],
-                  '2020-07-24': [],
-                  '2020-07-25': [{name: 'item 3 - any js object'}, {name: 'any js object'}]
-                }}
-                
-                pastScrollRange={0} 
-                
-                futureScrollRange={5}
-                renderEmptyDate={() => {return (<View><Text>This is empty</Text></View>);}}
-                renderItem={(item, firstItemInDay) => {return <AgendaItem item = {item} />}}
-                theme={{
+                <Button onPress = {() => createCalendar()} color = {Colors.buttonColor} title = "Create Calendar" />
+                <Button onPress = {() => deleteHandler()} color = {Colors.buttonColor} title = "Delete Calendar" />
 
-                  //caleder theme
-                    backgroundColor: '#ffffff',
-                    calendarBackground: '#ffffff',
-                    textSectionTitleColor: '#b6c1cd',
-                    textSectionTitleDisabledColor: '#d9e1e8',
-                    selectedDayBackgroundColor: 'black',
-                    selectedDayTextColor: '#ffffff',
-                    todayTextColor: '#00adf5',
-                    dayTextColor: '#2d4150',
-                    textDisabledColor: '#d9e1e8',
-                    dotColor: 'black',
-                    selectedDotColor: 'black',
-                    // arrowColor: 'orange',
-                    disabledArrowColor: '#d9e1e8',
-                    // monthTextColor: 'blue',
-                    // indicatorColor: 'blue',
-                    // textDayFontFamily: 'monospace',
-                    // textMonthFontFamily: 'monospace',
-                    // textDayHeaderFontFamily: 'monospace',
-                    textDayFontWeight: '300',
-                    textMonthFontWeight: 'bold',
-                    textDayHeaderFontWeight: '300',
-                    textDayFontSize: 16,
-                    textMonthFontSize: 16,
-                    textDayHeaderFontSize: 16,
+                <Button onPress = {() => addEvent()} color = {Colors.buttonColor} title = "Add event to Calendar" />
 
-
-                  agendaDayTextColor: 'black',
-                  agendaDayNumColor: 'black',
-                  agendaTodayColor: '#ffd13b',
-                  agendaKnobColor: 'black'
-                }}
-
-                /> */}
-
+                <Button onPress = {() => logEvents()} color = {Colors.buttonColor} title = "Log Events" />
+                 </View>
             </View>
         );
 }
@@ -102,7 +139,15 @@ PlannerPage.navigationOptions = navData =>{
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1
+        flex: 1,
+        flexDirection : "row",
+        width : "100%"
+    },
+    buttons : {
+      flex : 1,
+      justifyContent : "center",
+      alignItems: "center",
+    padding: 15,
     }
 });
 export default  PlannerPage;

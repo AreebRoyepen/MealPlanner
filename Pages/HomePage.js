@@ -12,13 +12,7 @@ const HomePage = () => {
 
         return (
             <View style={styles.container}>
-                {/* <Header style ={{width: 10}}
-                    backgroundColor ='black'
-                    leftComponent={<Icon name="menu"  style={{color:'white'}}  onPress={() => this.props.navigation.openDrawer()} />}
-                    centerComponent={<Text style={{color:'white'}}>Salwaa's Menu Planner</Text>}
-                    rightComponent={<Icon name="cart"  style={{color:'white'}} onPress={() => this.props.navigation.openDrawer()}/>} //this will be the buy more recipes navigation
-                /> */}
-              
+             
               <Card.Title
                   title="Cape Malay and Other Recipes"
                   subtitle="Plan your menu for the next few days/weeks"
