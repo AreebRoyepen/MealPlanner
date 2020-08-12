@@ -2,21 +2,16 @@ import React, { useState } from 'react';
 import * as Font from 'expo-font';
 import { AppLoading } from 'expo';
 import { enableScreens } from 'react-native-screens';
-import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
-import ReduxThunk from "redux-thunk";
-
+import { PersistGate } from 'redux-persist/integration/react';
 import Navigator from './navigation/Navigator';
-import recipesReducer from './store/reducers/recipes';
 import { Root } from 'native-base';
+
+import {store, persistor} from "./store/store";
 
 enableScreens();
 
-const rootReducer = combineReducers({
-  recipes: recipesReducer
-});
 
-const store = createStore(rootReducer, applyMiddleware(ReduxThunk));
 
 const fetchFonts = () => {
   return Font.loadAsync({
@@ -39,10 +34,11 @@ export default function App() {
 
   return (
     <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
       <Root>
       <Navigator />
       </Root>
-      
+      </PersistGate>
     </Provider>
   );
 }
