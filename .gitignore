@@ -66,3 +66,4 @@ web-build/
 android/app/google-services.json
 
 .env
+OpenAndroidEmulator.bat
