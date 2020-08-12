@@ -119,7 +119,7 @@ const RecipeList = (props) => {
   return (
     <View style={styles.list}>
       <FlatList
-      ListEmptyComponent = {() => <Text>Loading ... </Text>}
+      ListEmptyComponent = {() => isLoading ? <Text>Loading ... </Text> : <Text> No Items </Text>}
       ListHeaderComponent = {<SearchBox value = {searchWord} onChangeText = {(text) => searchRecipes(text)}  />}
         onRefresh={loadRecipes}
         refreshing={isRefreshing}

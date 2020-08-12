@@ -1,4 +1,3 @@
-//import { MEALS } from '../../data/dummy-data';
 import { TOGGLE_FAVORITE, SET_FILTERS, GET_RECIPES, ADD_TO_GROCERIES, ADD_TO_INGREDIENTS_LIST, EDIT_INGREDIENTS_LIST } from '../actions/recipes';
 
 const initialState = {
