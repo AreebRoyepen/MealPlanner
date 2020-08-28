@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { View, FlatList, StyleSheet, ActivityIndicator, Text } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
-
+import { NavigationContainer } from '@react-navigation/native';
 import * as recipeActions from "../store/actions/recipes";
 import RecipeItem from "./RecipeItem";
 import Colors from "../constants/Colors";
