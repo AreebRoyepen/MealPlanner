@@ -1,19 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Button, Alert } from 'react-native';
+import { View, Text, StyleSheet, Button, Alert,ScrollView } from 'react-native';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import { Header } from 'react-native-elements';
 import { Left, Right, Icon } from 'native-base';
+import { FAB, Portal, Provider } from 'react-native-paper';
 
 import HeaderButton from '../components/HeaderButton';
-import AgendaItem from "../components/AgendaItem";
+import PlannerListItem from "../components/PlannerListItem";
 
 import * as Calendar from 'expo-calendar';
 import * as Permissions from 'expo-permissions';
 import Colors from '../constants/Colors';
+import { HeaderBackground } from 'react-navigation-stack';
 
-const PlannerPage = () => {
+const PlannerPage = ({ navigation }) => {
 
   const [calendarID, setCalendarID] = useState()
+
+  const [state, setState] = React.useState({ open: false });
+
+  const onStateChange = ({ open }) => setState({ open });
+
+  const { open } = state;
 
   function getMinDate(){
 
@@ -106,20 +114,53 @@ const PlannerPage = () => {
   }
 
         return (
-            <View style={styles.container}>
+               <Provider>
+                <ScrollView>
+                <Text>Monday, August 31</Text>
+                 <PlannerListItem></PlannerListItem>
+                <Text>Tuesday, September 1</Text>
+                 <PlannerListItem></PlannerListItem>
+                 <PlannerListItem></PlannerListItem>
+                 <Text>Wednesday, September 2</Text>
+                 <PlannerListItem></PlannerListItem>
+                 <PlannerListItem></PlannerListItem>
+                 <PlannerListItem></PlannerListItem>
+                 <Text>Thursday, September 3</Text>
+                 <PlannerListItem></PlannerListItem>
+                 <PlannerListItem></PlannerListItem>
+                 <PlannerListItem></PlannerListItem>
+                 <PlannerListItem></PlannerListItem>
+                 <Text>Friday, September 4</Text>
+                 <PlannerListItem></PlannerListItem>
+                 <PlannerListItem></PlannerListItem>
+                 <PlannerListItem></PlannerListItem>
+                 <PlannerListItem></PlannerListItem>
+                 <PlannerListItem></PlannerListItem>
+                </ScrollView>
+      <Portal>
+        <FAB.Group
+          open={open}
+          theme={{ colors: { accent: 'red' } }}
+          color="white" 
+          icon={open ? 'calendar-today' : 'plus' }
 
-              <View style = {styles.buttons}> 
-
-                
-                <Button onPress = {() => createCalendar()} color = {Colors.buttonColor} title = "Create Calendar" />
-                <Button onPress = {() => deleteHandler()} color = {Colors.buttonColor} title = "Delete Calendar" />
-
-                <Button onPress = {() => addEvent()} color = {Colors.buttonColor} title = "Add event to Calendar" />
-
-                <Button onPress = {() => logEvents()} color = {Colors.buttonColor} title = "Log Events" />
-
-              </View>
-            </View>
+          actions={[
+            { icon: 'plus', label:'add meal to planner', onPress: () => navigation.navigate('CreateAgenda')},
+            {
+              icon: 'email',
+              label: 'Email me my meal plan',
+              onPress: () => console.log('Pressed email'),
+            },
+          ]}
+          onStateChange={onStateChange}
+          onPress={() => {
+            if (open) {
+              // do something if the speed dial is open
+            }
+          }}
+        />
+      </Portal>
+    </Provider>
         );
 }
 
@@ -144,13 +185,32 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         flexDirection : "row",
-        width : "100%"
+        width : "100%",
+        height:200,
     },
     buttons : {
       flex : 1,
       justifyContent : "center",
       alignItems: "center",
     padding: 15,
-    }
+    },
+    openButton: {
+      backgroundColor: "#F194FF",
+    },
 });
 export default  PlannerPage;
+
+
+/****
+ * 
+ * 
+ * 
+ * 
+ * 
+                <Button onPress = {() => createCalendar()} color = {Colors.buttonColor} title = "Create Calendar" />
+                <Button onPress = {() => deleteHandler()} color = {Colors.buttonColor} title = "Delete Calendar" />
+
+                <Button onPress = {() => addEvent()} color = {Colors.buttonColor} title = "Add event to Calendar" />
+
+                <Button onPress = {() => logEvents()} color = {Colors.buttonColor} title = "Log Events" />
+ */

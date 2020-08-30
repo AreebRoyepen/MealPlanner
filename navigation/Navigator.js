@@ -5,6 +5,7 @@ import {createDrawerNavigator} from 'react-navigation-drawer';
 import {createStackNavigator} from 'react-navigation-stack';
 import {createAppContainer} from 'react-navigation';
 import HomePage from '../pages/HomePage';
+import CreateAgenda from '../pages/CreateAgenda';
 import FeedbackPage from '../pages/Feedback';
 import GroceryListPage from '../pages/GroceryList';
 import PlannerPage from '../pages/Planner';
@@ -32,6 +33,37 @@ const FeedbackNavigator = createStackNavigator(
       screen: FeedbackPage,
       navigationOptions: {
         title: 'Feedback Page'
+      }
+    },
+  },
+  {
+    // initialRouteName: 'Categories',
+    defaultNavigationOptions: defaultStackNavOptions
+  }
+);
+
+
+const CreateAgendaNavigator = createStackNavigator(
+  {
+    CreateAgenda: {
+      screen: CreateAgenda,
+      navigationOptions: {
+        title: 'Create Agenda'
+      }
+    },
+  },
+  {
+    // initialRouteName: 'Categories',
+    defaultNavigationOptions: defaultStackNavOptions
+  }
+);
+
+const HomeNavigator = createStackNavigator(
+  {
+    Home: {
+      screen: HomePage,
+      navigationOptions: {
+        title: 'Home Page'
       }
     },
   },
@@ -90,7 +122,7 @@ const RecipesNavigator = createStackNavigator(
 
 const MainNavigator = createDrawerNavigator(
   {
-
+    
     Recipes: {
       screen: RecipesNavigator,
       navigationOptions: {
@@ -115,6 +147,13 @@ const MainNavigator = createDrawerNavigator(
         title: 'Send Feedback'
       }
     },
+    CreateAgenda: {
+      screen:  CreateAgendaNavigator,
+      navigationOptions: {
+        title: ' Create Agenda'
+      }
+    },
+    
   },
   {
     contentOptions: {
