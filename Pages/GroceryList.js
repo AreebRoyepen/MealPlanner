@@ -130,6 +130,17 @@ const GroceryListPage = (props) => {
     }
   };
 
+//   if(groceries.length === 0) {
+//     return (
+//       <View style = {{ flex: 1, justifyContent: "center", alignItems: "center" }}>      
+//       <Text >
+//       Use the buttons above to generate a grocery list
+//     </Text>
+    
+// </View>
+//     )
+//   }
+
   return isLoading ? (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <ActivityIndicator size="large" color={Colors.primaryColor} />
@@ -148,6 +159,14 @@ const GroceryListPage = (props) => {
   ) : (
       <View style={styles.mainList}>
         <SectionList
+          ListEmptyComponent = {
+      <View style = {{ flex: 1, justifyContent: "center", alignItems: "center" }}>      
+      <Text >
+      Use the buttons above to generate a grocery list
+    </Text>
+    
+</View>
+          }
           ListHeaderComponent={
             <View style={styles.textboxContainer}>
               <View style={styles.row}>
@@ -228,7 +247,10 @@ const GroceryListPage = (props) => {
             onChange={endDateHandler}
           />
         )}
+
+{console.log(groceries)}        
       </View>
+
 
       
   );

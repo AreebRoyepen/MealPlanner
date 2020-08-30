@@ -7,7 +7,10 @@ import { PersistGate } from 'redux-persist/integration/react';
 import Navigator from './navigation/Navigator';
 import { Root } from 'native-base';
 
-import {store, persistor} from "./store/store";
+import {store,
+  // persistor
+  } 
+   from "./store/store";
 
 enableScreens();
 
@@ -34,11 +37,11 @@ export default function App() {
 
   return (
     <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
+      {/* <PersistGate loading={null} persistor={persistor}> */}
       <Root>
       <Navigator />
       </Root>
-      </PersistGate>
+      {/* </PersistGate> */}
     </Provider>
   );
 }

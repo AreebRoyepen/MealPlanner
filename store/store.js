@@ -9,22 +9,23 @@ const rootReducer = combineReducers({
     recipes: recipesReducer
   });
   
-const persistConfig = {
+// const persistConfig = {
   
-  key: 'root',
+//   key: 'root',
   
-  storage: AsyncStorage,
+//   storage: AsyncStorage,
   
-  whitelist: [
-    'recipes',
-  ],
-//   blacklist: [],
-};
+//   whitelist: [
+//     'recipes',
+//   ],
+// //   blacklist: [],
+// };
 
-const persistedReducer = persistReducer(persistConfig, rootReducer);
+//const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 const store = createStore(
-  persistedReducer,
+ // persistedReducer, 
+ rootReducer,
   applyMiddleware(
     ReduxThunk
   ),
@@ -34,5 +35,5 @@ let persistor = persistStore(store);
 
 export {
   store,
-  persistor,
+ // persistor,
 };

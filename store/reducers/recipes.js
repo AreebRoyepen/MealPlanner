@@ -13,9 +13,7 @@ const recipesReducer = (state = initialState, action) => {
   switch (action.type) {
 
     case GET_RECIPES:
-      return{
-        ...state, recipes: action.recipes
-      }
+      return{ ...state, recipes: action.recipes }
 
     case ADD_TO_GROCERIES:
 

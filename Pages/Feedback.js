@@ -38,7 +38,6 @@ const FeedbackPage = () => {
           <View style={styles.formControl}>
             <Text style={styles.label}>Subject</Text>
             <TextInput
-              multiline
               style={styles.input}
               onChangeText={(e) => setSubject(e)}
               //value={description}

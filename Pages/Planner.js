@@ -87,6 +87,8 @@ const PlannerPage = () => {
       }
   
       let x = await Calendar.createEventAsync("1", details);
+      console.log("event:");
+      console.log(x);
     })();
     
 
@@ -97,7 +99,7 @@ const PlannerPage = () => {
     (async () => {
 
   
-      let x = await Calendar.getEventAsync("1", new Date(), new Date());
+      let x = await Calendar.getEventsAsync(["1"], getMinDate(), getMaxDate());
       console.log(x)
     })();
 
@@ -106,7 +108,7 @@ const PlannerPage = () => {
         return (
             <View style={styles.container}>
 
-                <View style = {styles.buttons}> 
+              <View style = {styles.buttons}> 
 
                 
                 <Button onPress = {() => createCalendar()} color = {Colors.buttonColor} title = "Create Calendar" />
@@ -115,7 +117,8 @@ const PlannerPage = () => {
                 <Button onPress = {() => addEvent()} color = {Colors.buttonColor} title = "Add event to Calendar" />
 
                 <Button onPress = {() => logEvents()} color = {Colors.buttonColor} title = "Log Events" />
-                 </View>
+
+              </View>
             </View>
         );
 }

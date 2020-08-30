@@ -89,7 +89,6 @@ const RecipeDatailPage = (props) => {
   }, [dispatch, recipe]);
 
   useEffect(() => {
-    // props.navigation.setParams({ recipeTitle: selectedRecipe.title });
     props.navigation.setParams({ addToPlanner: addToPlannerHandler });
   }, [addToPlannerHandler]);
 
