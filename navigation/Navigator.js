@@ -12,6 +12,7 @@ import PlannerPage from '../pages/Planner';
 import  RecipesPage from '../pages/Recipes';
 import Colors from '../constants/Colors';
 import RecipeDatailPage from '../pages/RecipeDatailPage';
+import Settings from '../pages/Settings';
 
 const defaultStackNavOptions = {
   headerStyle: {
@@ -43,12 +44,12 @@ const FeedbackNavigator = createStackNavigator(
 );
 
 
-const CreateAgendaNavigator = createStackNavigator(
+const SettingsNavigator = createStackNavigator(
   {
     CreateAgenda: {
-      screen: CreateAgenda,
+      screen: Settings,
       navigationOptions: {
-        title: 'Create Agenda'
+        title: 'Settings'
       }
     },
   },
@@ -163,6 +164,12 @@ const MainNavigator = createDrawerNavigator(
       screen: FeedbackNavigator,
       navigationOptions: {
         title: 'Send Feedback'
+      }
+    },
+    Settings: {
+      screen: SettingsNavigator,
+      navigationOptions: {
+        title: 'Settings'
       }
     },
     // CreateAgenda: {
