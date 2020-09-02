@@ -6,6 +6,7 @@ export const ADD_TO_GROCERIES = "ADD_TO_GROCERIES";
 export const ADD_TO_INGREDIENTS_LIST = "ADD_TO_INGREDIENTS_LIST";
 export const EDIT_INGREDIENTS_LIST = "EDIT_INGREDIENTS_LIST";
 export const SET_CALENDAR_ID = "SET_CALENDAR_ID";
+export const CHANGE_SETTINGS = "CHANGE_SETTINGS";
 
 export const getRecipes = () => {
   return async (dispatch) => {
@@ -27,6 +28,10 @@ export const getRecipes = () => {
           });
     }
   };
+};
+
+export const changeSettings = (list) => {
+  return {type: CHANGE_SETTINGS, list, list};
 };
 
 export const setCalendarID = (id) => {
