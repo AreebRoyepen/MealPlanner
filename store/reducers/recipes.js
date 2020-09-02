@@ -1,11 +1,12 @@
-import { TOGGLE_FAVORITE, SET_FILTERS, GET_RECIPES, ADD_TO_GROCERIES, ADD_TO_INGREDIENTS_LIST, EDIT_INGREDIENTS_LIST } from '../actions/recipes';
+import { TOGGLE_FAVORITE, SET_FILTERS, GET_RECIPES, ADD_TO_GROCERIES, ADD_TO_INGREDIENTS_LIST, EDIT_INGREDIENTS_LIST, SET_CALENDAR_ID } from '../actions/recipes';
 
 const initialState = {
   recipes: new Array(0),
   filteredRecipes: new Array(0),
   favoriteRecipes: new Array(0),
   selectedRecipes: new Array(0),
-  ingredientsList: new Array(0)
+  ingredientsList: new Array(0),
+  calendarID: null
 };
 
 const recipesReducer = (state = initialState, action) => {
@@ -14,6 +15,10 @@ const recipesReducer = (state = initialState, action) => {
 
     case GET_RECIPES:
       return{ ...state, recipes: action.recipes }
+
+    case SET_CALENDAR_ID:
+
+      return{ ...state, calendarID: action.id }
 
     case ADD_TO_GROCERIES:
 
