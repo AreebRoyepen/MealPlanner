@@ -166,7 +166,6 @@ RecipeDatailPage.navigationOptions = (navigationData) => {
   // const id = navigationData.navigation.getParam('id');
   //const recipeTitle = navigationData.navigation.getParam("recipeTitle");
   const recipe = navigationData.navigation.getParam("recipe");
-  addToPlanner
   const addToPlanner = navigationData.navigation.getParam("addToPlanner");
   const toggleFavorite = navigationData.navigation.getParam("toggleFav");
   const isFavorite = navigationData.navigation.getParam("isFav");
@@ -183,7 +182,7 @@ RecipeDatailPage.navigationOptions = (navigationData) => {
         <Item
           title="Add to Planner"
           iconName={"ios-calendar"}
-          onPress={addToPlanner}
+          onPress={() => navigationData.navigation.push('CreateAgenda')}
         />
       </HeaderButtons>
     ),

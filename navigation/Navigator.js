@@ -96,6 +96,12 @@ const PlannerNavigator = createStackNavigator(
         title: 'Your Planner'
       }
     },
+    CreateAgenda: {
+      screen: CreateAgenda,
+      navigationOptions: {
+        title: 'Create Agenda'
+      }
+    },
   },
   {
     // initialRouteName: 'Categories',
@@ -111,8 +117,20 @@ const RecipesNavigator = createStackNavigator(
         title: 'Recipes'
       }
     },
-    RecipeDetail : RecipeDatailPage
+    RecipeDetail : {
+      screen: RecipeDatailPage,
+      avigationOptions: {
+        title: 'Recipe Details'
+      }
+    },
+    CreateAgenda: {
+      screen: CreateAgenda,
+      navigationOptions: {
+        title: 'Create Agenda'
+      }
+    },
   },
+  
   {
     // initialRouteName: 'Categories',
     defaultNavigationOptions: defaultStackNavOptions
@@ -147,12 +165,12 @@ const MainNavigator = createDrawerNavigator(
         title: 'Send Feedback'
       }
     },
-    CreateAgenda: {
-      screen:  CreateAgendaNavigator,
-      navigationOptions: {
-        title: ' Create Agenda'
-      }
-    },
+    // CreateAgenda: {
+    //   screen:  CreateAgendaNavigator,
+    //   navigationOptions: {
+    //     title: ' Create Agenda'
+    //   }
+    // },
     
   },
   {
