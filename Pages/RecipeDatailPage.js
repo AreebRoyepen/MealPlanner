@@ -171,7 +171,7 @@ RecipeDatailPage.navigationOptions = (navigationData) => {
   const isFavorite = navigationData.navigation.getParam("isFav");
   // const selectedRecipe = MEALS.find(recipe => recipe.id === id);
   return {
-    headerTitle: recipe.title,
+    headerTitle: recipe.name,
     headerRight: () => (
       <HeaderButtons HeaderButtonComponent={HeaderButton}>
         <Item
@@ -182,7 +182,7 @@ RecipeDatailPage.navigationOptions = (navigationData) => {
         <Item
           title="Add to Planner"
           iconName={"ios-calendar"}
-          onPress={() => navigationData.navigation.push('CreateAgenda')}
+          onPress={() => navigationData.navigation.navigate({routeName:'CreateAgenda', params: {recipe: recipe}})}
         />
       </HeaderButtons>
     ),
