@@ -10,7 +10,7 @@ import {
   Linking,
   TextInput,
   Button,
-  CheckBox,
+  Alert,
 } from "react-native";
 
 import { Title, Paragraph } from "react-native-paper";
@@ -19,221 +19,224 @@ import HeaderButton from "../components/HeaderButton";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchInventory } from "../api/Api";
 import ChecklistItem from "../components/ChecklistItem";
-import { Icon, Input} from "native-base";
-
-import Colors from "../constants/Colors";
-
-import * as recipeActions from "../store/actions/recipes";
-
+import { Icon, Input, CheckBox, ListItem, Toast } from "native-base";
+import * as Calendar from "expo-calendar";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { TouchableOpacity, ScrollView } from "react-native-gesture-handler";
 
+import Colors from "../constants/Colors";
+import * as recipeActions from "../store/actions/recipes";
+
 const CreateAgenda = (props) => {
+
+  const mealTimes = useSelector((state) => state.recipes.mealTimes);
+
+
   const recipes = useSelector((state) => state.recipes.selectedRecipes);
-  const [error, setError] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const [openStartDate, setOpenStartDate] = useState(false);
-  const [openEndDate, setOpenEndDate] = useState(false);
+  const selectedRecipe = props.navigation.getParam("recipe");
 
-  const [startDate, setStartDate] = useState();
-  const [endDate, setEndDate] = useState();
+  const [openDate, setOpenDate] = useState(false);
 
-  const groceries = useSelector((state) => state.recipes.ingredientsList );
+  const [date, setDate] = useState();
 
-  const dispatch = useDispatch();
   const [isBreakfastSelected, setBreakfastSelection] = useState(false);
-  const [isLunchfastSelected, setLunchfastSelection] = useState(false);
-  const [isDinnerfastSelected, setDinnerfastSelection] = useState(false);
+  const [isLunchSelected, setLunchSelection] = useState(false);
+  const [isDinnerSelected, setDinnerSelection] = useState(false);
 
-  const getList = useCallback(async () => {
-    let param = "";
+  const calendarID = useSelector((state) => state.recipes.calendarID);
 
-    for (let x of recipes) {
-      param = param + x.id + ",";
+  const dateHandler = (event, date) => {
+    if (event.type !== "dismissed") {
+      setOpenDate(false);
+      setDate(date);
     }
+  };
 
-    setIsRefreshing(true);
+  const setBreakfastSelectionHandler = () => {
+    setBreakfastSelection(true)
+    setLunchSelection(false)
+    setDinnerSelection(false)
 
-    try {
-      let resp = await fetchInventory(param);
-      let list = [];
+  }
 
-      if (resp.error) {
-        console.log("ERROR FOR GROCERIES");
-        console.log(resp);
-        setError(true);
-      } else {
-        list = Object.entries(resp).map(([key, value]) => ({
-          ingredient: key,
-          quantity: value,
-          checked: false,
-        }));
+  const setLunchSelectionHandler = () => {
+    setLunchSelection(true)
+    setBreakfastSelection(false)
+    setDinnerSelection(false)
 
-        dispatch(recipeActions.addToIngredientsList(list));
+  }
 
-        setError(false);
+  const setDinnerSelectionHandler = () => {
+    setDinnerSelection(true)
+    setLunchSelection(false)
+    setBreakfastSelection(false)
+
+  }
+
+  const addEvent = () => {
+
+    if(date){
+
+      if(isBreakfastSelected){
+        date.setHours(mealTimes.breakfastTime.hour);
+        date.setMinutes(mealTimes.breakfastTime.minute);
+        setDate(date)
+      }else if (isLunchSelected){
+        date.setHours(mealTimes.lunchTime.hour);
+        date.setMinutes(mealTimes.lunchTime.minute);
+        setDate(date)
+      }else if (isDinnerSelected){
+        date.setHours(mealTimes.supperTime.hour);
+        date.setMinutes(mealTimes.supperTime.minute);
+        setDate(date)
+      }else{
+        Alert.alert("Choose a meal time please")
       }
-    } catch (err) {
-      setError(true);
-    } finally {
-      setIsRefreshing(false);
+
+      console.log("DATE")
+      console.log(date)
+      var endDate = new Date(date.getTime());
+      endDate.setHours(endDate.getHours() + 1);
+
+      (async () => {
+        let details = {
+          title: "Make " + selectedRecipe.name,
+          startDate: date,
+          endDate: endDate,
+          notes: "Please do not edit. This event has been created by your Meal Planner app. \n\nCheck the app for instructions and ingredients :)"
+        };
+  
+        let x = await Calendar.createEventAsync(calendarID.toString(), details);
+      })();
+      Toast.show({
+        text: "Item added to planner",
+        duration: 3000                  
+      });
+      props.navigation.popToTop();
+    }else{
+      Alert.alert("Choose a date please")
     }
-  }, [recipes]);
-
-  useEffect(() => {
-    const willFocusSub = props.navigation.addListener("willFocus", getList);    
-
-    return () => {
-      willFocusSub.remove();
-    };
-  }, [getList]);
 
 
-  const startDateHandler = (event, date) => {
-    if (event.type !== "dismissed") {
-      setOpenStartDate(false);
-      setStartDate(date);
-    }
-  };
 
-  const endDateHandler = (event, date) => {
-    if (event.type !== "dismissed") {
-      setOpenEndDate(false);
-      setEndDate(date);
-    }
-  };
+  }
 
-  return(
+  return (
     <KeyboardAvoidingView
-    style={styles.container}
-    behavior={Platform.OS == "ios" ? "padding" : "height"}
-    keyboardVerticalOffset={90}
-  >
-    <ScrollView>
-  
-            
-  
-      <View>
-        <Title style={{ marginTop: 15, marginLeft: 15, marginRight: 15 }}>
-          Setting A Meal For The Day
-        </Title>
+      style={styles.container}
+      behavior={Platform.OS == "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={90}
+    >
+      {console.log(selectedRecipe)}
+      <ScrollView>
+        <View>
+          <Title style={{ marginTop: 15, marginLeft: 15, marginRight: 15 }}>
+            Setting A Meal For The Day
+          </Title>
 
-        <View style={styles.formControl}>
-          
-          <Text style={styles.label}>Select Day</Text>
-          <View style={styles.textboxContainer}>
-              <View style={styles.row}>
+          <View style={styles.formControl}>
+            <View style={styles.textboxContainer}>
                 <TouchableOpacity
                   style={styles.textContainer}
-                  onPress={() => setOpenStartDate(!openStartDate)}
+                  onPress={() => setOpenDate(!openDate)}
                 >
                   <Text style={styles.dateText}>
-                    {startDate ? startDate.toDateString() : "Start Date"}
+                    {date ? date.toDateString() : "Select a day"}
                   </Text>
                 </TouchableOpacity>
               </View>
+
+            {openDate && (
+              <DateTimePicker
+                value={date ? date : new Date()}
+                mode={"date"}
+                is24Hour={true}
+                display="spinner"
+                onChange={dateHandler}
+              />
+            )}
+          </View>
+
+          <View style={styles.formControl}>
+            <Text style={styles.label}>Meal</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="search for recipes/meals"
+              value= {selectedRecipe.name}
+            />
+          </View>
+
+          <View style={styles.checkboxRow}>
+            <View style={styles.checkboxContainer}>
+              <CheckBox
+                color={Colors.buttonColor}
+                checked={isBreakfastSelected}
+                onPress={setBreakfastSelectionHandler}
+                style={styles.checkbox}
+              />
+              <Text style={styles.label}>breakfast</Text>
+              </View>
+
+               <View style={styles.checkboxContainer}>
+              <CheckBox
+                color={Colors.buttonColor}
+                checked={isLunchSelected}
+                onPress={setLunchSelectionHandler}
+                style={styles.checkbox}
+              />
+              <Text style={styles.label}>lunch</Text>
             </View>
-          
-        {openStartDate && (
-          <DateTimePicker
-            value={startDate ? startDate : new Date()}
-            mode={"date"}
-            is24Hour={true}
-            display="spinner"
-            onChange={startDateHandler}
-          />
-        )}
+             <View style={styles.checkboxContainer}>
+              <CheckBox
+                color={Colors.buttonColor}
+                checked={isDinnerSelected}
+                onPress={setDinnerSelectionHandler}
+                style={styles.checkbox}
+              />
+              <Text style={styles.label}>dinner</Text>
+            </View>
+          </View>
 
-        {openEndDate && (
-          <DateTimePicker
-            minimumDate={startDate}
-            value={endDate ? endDate : new Date()}
-            mode={"date"}
-            is24Hour={true}
-            display="spinner"
-            onChange={endDateHandler}
-          />
-        )}
-          
+          <View style={styles.buttonContainer}>
+            <Button
+              icon="send"
+              mode="contained"
+              color={Colors.buttonColor}
+              title="Add Meal To Planner"
+              onPress={() => addEvent()}
+            />
+          </View>
         </View>
-
-        <View style={styles.formControl}>
-          <Text style={styles.label}>Meal</Text>
-          <TextInput
-            style={styles.input}
-           placeholder ='search for recipes/meals'
-          />
-        </View>
-
-        <View style={styles.checkboxContainer}>
-        <CheckBox
-          value={isBreakfastSelected}
-          onValueChange={setBreakfastSelection}
-          style={styles.checkbox}
-        />
-        <Text style={styles.label}>breakfast</Text>
-        <CheckBox
-          value={isLunchfastSelected}
-          onValueChange={setLunchfastSelection}
-          style={styles.checkbox}
-        />
-        <Text style={styles.label}>lunch</Text>
-        <CheckBox
-          value={isDinnerfastSelected}
-          onValueChange={setDinnerfastSelection}
-          style={styles.checkbox}
-        />
-        <Text style={styles.label}>dinner</Text>
-      </View>
-
-        <View style={styles.buttonContainer}>
-          <Button
-            icon="send"
-            mode="contained"
-            color={Colors.buttonColor}
-            title="Add To Meal Planner"
-          />
-        </View>
-      </View>
-    </ScrollView>
-  </KeyboardAvoidingView>
-
-      
-
-      
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
 CreateAgenda.navigationOptions = (navData) => {
   return {
     headerTitle: "Create Agenda",
-    headerLeft: () => (
-      <HeaderButtons HeaderButtonComponent={HeaderButton}>
-        <Item
-          title="Menu"
-          iconName="ios-menu"
-          onPress={() => {
-            navData.navigation.toggleDrawer();
-          }}
-        />
-      </HeaderButtons>
-    ),
+    // headerLeft: () => (
+    //   <HeaderButtons HeaderButtonComponent={HeaderButton}>
+    //     <Item
+    //       title="Menu"
+    //       iconName="ios-menu"
+    //       onPress={() => {
+    //         navData.navigation.toggleDrawer();
+    //       }}
+    //     />
+    //   </HeaderButtons>
+    // ),
   };
 };
 
 const styles = StyleSheet.create({
-  mainList: {
-    flexGrow: 1,
-  },
   checkedList: {
     flexGrow: 1,
   },
   textboxContainer: {
-    margin: 5,
-    flexDirection: "row",
-    //backgroundColor: "grey",
+    marginVertical: 20,
+    alignItems: "center",
   },
   row: {
     justifyContent: "center",
@@ -243,6 +246,9 @@ const styles = StyleSheet.create({
     textAlignVertical: "center",
     shadowOpacity: 20,
     paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderColor: Colors.primaryColor,
+    minHeight:25
   },
   dateText: {
     color: Colors.primaryColor,
@@ -252,9 +258,8 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   label: {
-    fontFamily: "open-sans-bold",
     marginVertical: 8,
-    paddingHorizontal: 10,
+    paddingHorizontal: 20
   },
   input: {
     paddingHorizontal: 10,
@@ -267,15 +272,19 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginRight: 15,
   },
-  checkboxContainer: {
+  checkboxRow: {
     flexDirection: "row",
     marginBottom: 20,
+    justifyContent: "space-between",
+    marginHorizontal: 30,
+    marginVertical: 20
+  },
+  checkboxContainer: {
+    flexDirection: "row",
+    alignItems:"center",
   },
   checkbox: {
     alignSelf: "center",
-  },
-  label: {
-    margin: 8,
-  },
+  }
 });
 export default CreateAgenda;
