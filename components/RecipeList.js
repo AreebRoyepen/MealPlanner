@@ -98,8 +98,6 @@ const RecipeList = (props) => {
                 });
               }if(buttonIndex ===1){
                 props.navigation.navigate({routeName:'CreateAgenda', params: {recipe: itemData.item}});
-
-
                 dispatch(recipeActions.addToMyPlanner(itemData.item));
               }
             }

@@ -141,7 +141,12 @@ const RecipesNavigator = createStackNavigator(
 
 const MainNavigator = createDrawerNavigator(
   {
-    
+    Planner: {
+      screen: PlannerNavigator,
+      navigationOptions: {
+        title: 'Your Planner'
+      }
+    },
     Recipes: {
       screen: RecipesNavigator,
       navigationOptions: {
@@ -154,12 +159,7 @@ const MainNavigator = createDrawerNavigator(
         title: 'Grocery List'
       }
     },
-    Planner: {
-      screen: PlannerNavigator,
-      navigationOptions: {
-        title: 'Your Planner'
-      }
-    },
+
     Feedback: {
       screen: FeedbackNavigator,
       navigationOptions: {

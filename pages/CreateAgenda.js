@@ -101,7 +101,7 @@ const CreateAgenda = (props) => {
 
       (async () => {
         let details = {
-          title: "Make " + selectedRecipe.name,
+          title: selectedRecipe.name,
           startDate: date,
           endDate: endDate,
           notes: "Please do not edit. This event has been created by your Meal Planner app. \n\nCheck the app for instructions and ingredients :)"
@@ -149,6 +149,7 @@ const CreateAgenda = (props) => {
 
             {openDate && (
               <DateTimePicker
+              minimumDate= {new Date()}
                 value={date ? date : new Date()}
                 mode={"date"}
                 is24Hour={true}
