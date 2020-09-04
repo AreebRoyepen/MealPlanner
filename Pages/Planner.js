@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,8 @@ import {
   Button,
   Alert,
   ScrollView,
+  ActivityIndicator,
+  RefreshControl,
 } from "react-native";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import { Header } from "react-native-elements";
@@ -16,9 +18,7 @@ import HeaderButton from "../components/HeaderButton";
 import PlannerListItem from "../components/PlannerListItem";
 
 import * as Calendar from "expo-calendar";
-import * as Permissions from "expo-permissions";
 import Colors from "../constants/Colors";
-import { HeaderBackground } from "react-navigation-stack";
 import { useDispatch, useSelector } from "react-redux";
 import * as actions from "../store/actions/recipes";
 
@@ -29,12 +29,17 @@ const PlannerPage = ({ navigation }) => {
   const { open } = state;
   const dispatch = useDispatch();
   const calendarID = useSelector((state) => state.recipes.calendarID);
+  const recipes = useSelector((state) => state.recipes.recipes);
+  const [refresh, setRefresh] = useState(false)
+
+  const [calendarRecipes, setCalendarRecipes] = useState();
 
 
-  function getMinDate() {
-    var x = new Date();
-    x.setMonth(x.getMonth() - 1);
-    return x;
+  function returnMorningDate(){
+    let date = new Date();
+    date.setHours(0);
+    date.setMinutes(0);
+    return date;
   }
 
   function getMaxDate() {
@@ -43,31 +48,33 @@ const PlannerPage = ({ navigation }) => {
     return x;
   }
   
-  useEffect(() => {
-    (async () => {
+  useEffect(() =>{
+    
+    pageLoad();
+  },[pageLoad])
+  
+  const pageLoad = useCallback(async () => {
+    let calendarRecipes;
+      setRefresh(true)
       const { status } = await Calendar.requestCalendarPermissionsAsync();
       if (status === "granted") {
         const calendars = await Calendar.getCalendarsAsync();
-        console.log("Here are all your calendars:");
-        console.log(calendarID);
-        console.log({calendars});
         //await Calendar.deleteCalendarAsync("1");
 
         if (calendars.find(cal => cal.title === "Meal Planner Calendar")) {
-          console.log(calendars.find(cal => cal.title === "Meal Planner Calendar").id);
           dispatch(actions.setCalendarID(calendars.find(cal => cal.title === "Meal Planner Calendar").id));
         } else {
           Alert.alert("You have no calendars, create one to add events");
           let x = await createCalendar();
-          console.log(x);
         }
+        calendarRecipes = await Calendar.getEventsAsync([calendarID], returnMorningDate(), getMaxDate())
+        
+        getRecipes(calendarRecipes)
 
-        let x = await Calendar.getEventsAsync([calendarID], getMinDate(), new Date())
-
-        console.log(x);
+        //console.log(x);
       }
-    })();
-  });
+    
+  },[calendarID]);
 
   const deleteHandler = () => {
     (async () => {
@@ -96,37 +103,48 @@ const PlannerPage = ({ navigation }) => {
     })();
   };
 
-  const logEvents = () => {
-    (async () => {
-      let x = await Calendar.getEventsAsync(["1"], getMinDate(), getMaxDate());
-      console.log(x);
-    })();
-  };
+  const getRecipes = (calendarRecipes) => {
 
-  const uri =
-    "https://www.withablast.net/wp-content/uploads/2013/01/Cape-Chicken-Breyani-c-768x535.jpg";
+    let selectedRecipes =[];
+
+    calendarRecipes.forEach((item, index) =>{
+      selectedRecipes.push(recipes.find((x) => x.name === item.title))
+
+      })
+      
+      setRefresh(false)
+      setCalendarRecipes(selectedRecipes)
+
+
+  }
+
 
   return (
     <Provider>
-      {console.log(calendarID)}
-      <ScrollView>
+      <ScrollView
+            refreshControl={
+              <RefreshControl
+                refreshing={refresh}
+                onRefresh={pageLoad}
+              />
+            }>
         <Text>Monday, August 31</Text>
-        <PlannerListItem
-          title="Cape Chicken Breyani"
-          image={uri}
-          time={"Dinner"}
-        ></PlannerListItem>
-        <Text>Tuesday, September 1</Text>
-        <PlannerListItem
-          title="Cape Chicken Breyani"
-          image={uri}
-          time={"Lunch"}
-        ></PlannerListItem>
-        <PlannerListItem
-          title="Cape Chicken Breyani"
-          image={uri}
-          time={"Dinner"}
-        ></PlannerListItem>
+
+
+
+        {calendarRecipes ? calendarRecipes.map((recipe) => (
+        
+          <PlannerListItem
+            key={recipe.id}
+            title={recipe.name}
+            image={recipe.path}
+            time={"Dinner"}
+          ></PlannerListItem>
+        ))
+      :
+      console.log(recipe)
+      }
+
       </ScrollView>
       <Portal>
         <FAB.Group
