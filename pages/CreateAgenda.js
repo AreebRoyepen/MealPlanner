@@ -28,9 +28,7 @@ import Colors from "../constants/Colors";
 import * as recipeActions from "../store/actions/recipes";
 
 const CreateAgenda = (props) => {
-
   const mealTimes = useSelector((state) => state.recipes.mealTimes);
-
 
   const recipes = useSelector((state) => state.recipes.selectedRecipes);
 
@@ -54,48 +52,43 @@ const CreateAgenda = (props) => {
   };
 
   const setBreakfastSelectionHandler = () => {
-    setBreakfastSelection(true)
-    setLunchSelection(false)
-    setDinnerSelection(false)
-
-  }
+    setBreakfastSelection(true);
+    setLunchSelection(false);
+    setDinnerSelection(false);
+  };
 
   const setLunchSelectionHandler = () => {
-    setLunchSelection(true)
-    setBreakfastSelection(false)
-    setDinnerSelection(false)
-
-  }
+    setLunchSelection(true);
+    setBreakfastSelection(false);
+    setDinnerSelection(false);
+  };
 
   const setDinnerSelectionHandler = () => {
-    setDinnerSelection(true)
-    setLunchSelection(false)
-    setBreakfastSelection(false)
-
-  }
+    setDinnerSelection(true);
+    setLunchSelection(false);
+    setBreakfastSelection(false);
+  };
 
   const addEvent = () => {
-
-    if(date){
-
-      if(isBreakfastSelected){
+    if (date) {
+      if (isBreakfastSelected) {
         date.setHours(mealTimes.breakfastTime.hour);
         date.setMinutes(mealTimes.breakfastTime.minute);
-        setDate(date)
-      }else if (isLunchSelected){
+        setDate(date);
+      } else if (isLunchSelected) {
         date.setHours(mealTimes.lunchTime.hour);
         date.setMinutes(mealTimes.lunchTime.minute);
-        setDate(date)
-      }else if (isDinnerSelected){
+        setDate(date);
+      } else if (isDinnerSelected) {
         date.setHours(mealTimes.supperTime.hour);
         date.setMinutes(mealTimes.supperTime.minute);
-        setDate(date)
-      }else{
-        Alert.alert("Choose a meal time please")
+        setDate(date);
+      } else {
+        Alert.alert("Choose a meal time please");
       }
 
-      console.log("DATE")
-      console.log(date)
+      console.log("DATE");
+      console.log(date);
       var endDate = new Date(date.getTime());
       endDate.setHours(endDate.getHours() + 1);
 
@@ -104,23 +97,21 @@ const CreateAgenda = (props) => {
           title: selectedRecipe.name,
           startDate: date,
           endDate: endDate,
-          notes: "Please do not edit. This event has been created by your Meal Planner app. \n\nCheck the app for instructions and ingredients :)"
+          notes:
+            "Please do not edit. This event has been created by your Meal Planner app. \n\nCheck the app for instructions and ingredients :)",
         };
-  
+
         let x = await Calendar.createEventAsync(calendarID.toString(), details);
       })();
       Toast.show({
         text: "Item added to planner",
-        duration: 3000                  
+        duration: 3000,
       });
       props.navigation.popToTop();
-    }else{
-      Alert.alert("Choose a date please")
+    } else {
+      Alert.alert("Choose a date please");
     }
-
-
-
-  }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -137,19 +128,19 @@ const CreateAgenda = (props) => {
 
           <View style={styles.formControl}>
             <View style={styles.textboxContainer}>
-                <TouchableOpacity
-                  style={styles.textContainer}
-                  onPress={() => setOpenDate(!openDate)}
-                >
-                  <Text style={styles.dateText}>
-                    {date ? date.toDateString() : "Select a day"}
-                  </Text>
-                </TouchableOpacity>
-              </View>
+              <TouchableOpacity
+                style={styles.textContainer}
+                onPress={() => setOpenDate(!openDate)}
+              >
+                <Text style={styles.dateText}>
+                  {date ? date.toDateString() : "Select a day"}
+                </Text>
+              </TouchableOpacity>
+            </View>
 
             {openDate && (
               <DateTimePicker
-              minimumDate= {new Date()}
+                minimumDate={new Date()}
                 value={date ? date : new Date()}
                 mode={"date"}
                 is24Hour={true}
@@ -164,7 +155,7 @@ const CreateAgenda = (props) => {
             <TextInput
               style={styles.input}
               placeholder="search for recipes/meals"
-              value= {selectedRecipe.name}
+              value={selectedRecipe.name}
             />
           </View>
 
@@ -177,9 +168,9 @@ const CreateAgenda = (props) => {
                 style={styles.checkbox}
               />
               <Text style={styles.label}>breakfast</Text>
-              </View>
+            </View>
 
-               <View style={styles.checkboxContainer}>
+            <View style={styles.checkboxContainer}>
               <CheckBox
                 color={Colors.buttonColor}
                 checked={isLunchSelected}
@@ -188,7 +179,7 @@ const CreateAgenda = (props) => {
               />
               <Text style={styles.label}>lunch</Text>
             </View>
-             <View style={styles.checkboxContainer}>
+            <View style={styles.checkboxContainer}>
               <CheckBox
                 color={Colors.buttonColor}
                 checked={isDinnerSelected}
@@ -238,29 +229,36 @@ const styles = StyleSheet.create({
   textboxContainer: {
     marginVertical: 20,
     alignItems: "center",
+    alignContent: "center",
   },
   row: {
     justifyContent: "center",
     alignItems: "center",
   },
   textContainer: {
-    textAlignVertical: "center",
+    //textAlignVertical: "center",
     shadowOpacity: 20,
     paddingHorizontal: 20,
     borderBottomWidth: 1,
     borderColor: Colors.primaryColor,
-    minHeight:25
+    borderRadius: 1,
+    minHeight: 30,
+    backgroundColor: "#EEE",
+    justifyContent: "center",
+    alignItems: "center",
   },
   dateText: {
     color: Colors.primaryColor,
     fontWeight: "bold",
+    justifyContent: "center",
+    alignItems: "center",
   },
   formControl: {
     width: "100%",
   },
   label: {
     marginVertical: 8,
-    paddingHorizontal: 20
+    paddingHorizontal: 20,
   },
   input: {
     paddingHorizontal: 10,
@@ -278,14 +276,14 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     justifyContent: "space-between",
     marginHorizontal: 30,
-    marginVertical: 20
+    marginVertical: 20,
   },
   checkboxContainer: {
     flexDirection: "row",
-    alignItems:"center",
+    alignItems: "center",
   },
   checkbox: {
     alignSelf: "center",
-  }
+  },
 });
 export default CreateAgenda;

@@ -339,9 +339,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   textContainer: {
-    textAlignVertical: "center",
+    //textAlignVertical: "center",
     shadowOpacity: 20,
     paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderColor: Colors.primaryColor,
+    borderRadius: 1,
+    minHeight:25,
+    backgroundColor: "#EEE",
+    justifyContent: "center",
+    alignItems: "center",
   },
   dateText: {
     color: Colors.primaryColor,
