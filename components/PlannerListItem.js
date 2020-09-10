@@ -19,9 +19,8 @@ const PlannerListItem = (props) => {
       <Card>
         <CardItem
           button
-          onLongPress={() => {
-            setModalVisible(true);
-          }}
+          onLongPress={props.onLongPress}
+          onPress={props.onPress}
         >
           <Left>
             <Thumbnail square small source={{ uri: props.image }} />
