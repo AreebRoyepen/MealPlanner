@@ -63,12 +63,7 @@ const RecipeList = (props) => {
       (meal) => meal.id === itemData.item.id
     );
 
-    //return 
-    // isLoading ? (
-    //   <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-    //     <ActivityIndicator size="large" color={Colors.primaryColor} />
-    //   </View>
-    // ) : 
+
     return (
       <RecipeItem
         recipe={itemData.item}
@@ -77,7 +72,6 @@ const RecipeList = (props) => {
             routeName: "RecipeDetail",
             params: {
               recipe: itemData.item,
-              recipeTitle: itemData.item.title,
               isFav: isFavorite,
             },
           });
