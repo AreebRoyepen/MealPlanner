@@ -33,6 +33,7 @@ const CreateAgenda = (props) => {
   const recipes = useSelector((state) => state.recipes.selectedRecipes);
 
   const selectedRecipe = props.navigation.getParam("recipe");
+  const edit = props.navigation.getParam("edit");
 
   const [openDate, setOpenDate] = useState(false);
 
@@ -50,6 +51,16 @@ const CreateAgenda = (props) => {
       setDate(date);
     }
   };
+
+  useEffect(()=>{
+    console.log(selectedRecipe);
+    console.log(edit);
+    if(edit){
+      let x = new Date(selectedRecipe.startDate);  
+      setDate(x)
+    }
+  },[]);
+
 
   const setBreakfastSelectionHandler = () => {
     setBreakfastSelection(true);
@@ -113,13 +124,56 @@ const CreateAgenda = (props) => {
     }
   };
 
+  const editEvent = () => {
+    if (date) {
+      if (isBreakfastSelected) {
+        date.setHours(mealTimes.breakfastTime.hour);
+        date.setMinutes(mealTimes.breakfastTime.minute);
+        setDate(date);
+      } else if (isLunchSelected) {
+        date.setHours(mealTimes.lunchTime.hour);
+        date.setMinutes(mealTimes.lunchTime.minute);
+        setDate(date);
+      } else if (isDinnerSelected) {
+        date.setHours(mealTimes.supperTime.hour);
+        date.setMinutes(mealTimes.supperTime.minute);
+        setDate(date);
+      } else {
+        Alert.alert("Choose a meal time please");
+      }
+
+      console.log("DATE");
+      console.log(date);
+      var endDate = new Date(date.getTime());
+      endDate.setHours(endDate.getHours() + 1);
+
+      (async () => {
+        let details = {
+          title: selectedRecipe.name,
+          startDate: date,
+          endDate: endDate,
+          notes:
+            "Please do not edit. This event has been created by your Meal Planner app. \n\nCheck the app for instructions and ingredients :)",
+        };
+
+        await Calendar.updateEventAsync(selectedRecipe.id, details);
+      })();
+      Toast.show({
+        text: "Item Edited",
+        duration: 3000,
+      });
+      props.navigation.popToTop();
+    } else {
+      Alert.alert("Choose a date please");
+    }
+  };
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS == "ios" ? "padding" : "height"}
       keyboardVerticalOffset={90}
     >
-      {console.log(selectedRecipe)}
       <ScrollView>
         <View>
           <Title style={{ marginTop: 15, marginLeft: 15, marginRight: 15 }}>
@@ -132,7 +186,7 @@ const CreateAgenda = (props) => {
                 style={styles.textContainer}
                 onPress={() => setOpenDate(!openDate)}
               >
-                <Text style={styles.dateText}>
+              <Text style={styles.dateText}>
                   {date ? date.toDateString() : "Select a day"}
                 </Text>
               </TouchableOpacity>
@@ -155,7 +209,7 @@ const CreateAgenda = (props) => {
             <TextInput
               style={styles.input}
               placeholder="search for recipes/meals"
-              value={selectedRecipe.name}
+              value={edit ? selectedRecipe.recipe.name : selectedRecipe.name}
             />
           </View>
 
@@ -195,8 +249,8 @@ const CreateAgenda = (props) => {
               icon="send"
               mode="contained"
               color={Colors.buttonColor}
-              title="Add Meal To Planner"
-              onPress={() => addEvent()}
+              title={edit ? "Edit Meal In Planner":"Add Meal To Planner"}
+              onPress={() => edit ? editEvent() : addEvent()}
             />
           </View>
         </View>
