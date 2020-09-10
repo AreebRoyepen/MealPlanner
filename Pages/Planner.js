@@ -3,15 +3,11 @@ import {
   View,
   Text,
   StyleSheet,
-  Button,
   Alert,
-  ScrollView,
-  ActivityIndicator,
-  RefreshControl,
+  FlatList,
+  SectionList,
 } from "react-native";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
-import { Header } from "react-native-elements";
-import { Left, Right, Icon } from "native-base";
 import { FAB, Portal, Provider } from "react-native-paper";
 
 import HeaderButton from "../components/HeaderButton";
@@ -21,21 +17,22 @@ import * as Calendar from "expo-calendar";
 import Colors from "../constants/Colors";
 import { useDispatch, useSelector } from "react-redux";
 import * as actions from "../store/actions/recipes";
+import { ActionSheet, Toast } from "native-base";
 
 const PlannerPage = ({ navigation }) => {
-
   const [state, setState] = useState({ open: false });
   const onStateChange = ({ open }) => setState({ open });
   const { open } = state;
   const dispatch = useDispatch();
-  const calendarID = useSelector((state) => state.recipes.calendarID);
+  const storedCalendarID = useSelector((state) => state.recipes.calendarID);
+  const favoriteRecipes = useSelector((state) => state.recipes.favoriteRecipes);
+
   const recipes = useSelector((state) => state.recipes.recipes);
-  const [refresh, setRefresh] = useState(false)
+  const [refresh, setRefresh] = useState(false);
 
   const [calendarRecipes, setCalendarRecipes] = useState();
 
-
-  function returnMorningDate(){
+  function returnMorningDate() {
     let date = new Date();
     date.setHours(0);
     date.setMinutes(0);
@@ -47,34 +44,55 @@ const PlannerPage = ({ navigation }) => {
     x.setMonth(x.getMonth() + 12);
     return x;
   }
-  
-  useEffect(() =>{
-    
-    pageLoad();
-  },[pageLoad])
-  
+
+  useEffect(() => {
+    const willFocusSub = navigation.addListener("willFocus", pageLoad);
+
+    return () => {
+      willFocusSub.remove();
+    };
+  }, [pageLoad]);
+
   const pageLoad = useCallback(async () => {
+    setRefresh(true);
     let calendarRecipes;
-      setRefresh(true)
-      const { status } = await Calendar.requestCalendarPermissionsAsync();
-      if (status === "granted") {
-        const calendars = await Calendar.getCalendarsAsync();
-        //await Calendar.deleteCalendarAsync("1");
+    let calendarID;
 
-        if (calendars.find(cal => cal.title === "Meal Planner Calendar")) {
-          dispatch(actions.setCalendarID(calendars.find(cal => cal.title === "Meal Planner Calendar").id));
-        } else {
-          Alert.alert("You have no calendars, create one to add events");
-          let x = await createCalendar();
-        }
-        calendarRecipes = await Calendar.getEventsAsync([calendarID], returnMorningDate(), getMaxDate())
-        
-        getRecipes(calendarRecipes)
+    console.log("recipes");
+    console.log(recipes);
+    // if(recipes.length === 0) {
 
-        //console.log(x);
+    //   await dispatch(actions.getRecipes()).then(console.log("BOB"))
+    //   console.log(recipes)
+
+    // }
+    const { status } = await Calendar.requestCalendarPermissionsAsync();
+    if (status === "granted") {
+      const calendars = await Calendar.getCalendarsAsync();
+      //await Calendar.deleteCalendarAsync("1");
+      // console.log(calendars)
+      if (calendars.find((cal) => cal.title === "Meal Planner Calendar")) {
+        calendarID = calendars.find(
+          (cal) => cal.title === "Meal Planner Calendar"
+        ).id;
+
+        dispatch(actions.setCalendarID(calendarID));
+      } else {
+        Alert.alert("You have no calendars, create one to add events");
+        await createCalendar();
       }
-    
-  },[calendarID]);
+      // console.log("calendar ID")
+      // console.log(calendarID)
+      calendarRecipes = await Calendar.getEventsAsync(
+        [calendarID],
+        returnMorningDate(),
+        getMaxDate()
+      );
+
+      makeList(calendarRecipes);
+      //addRecipesToList(calendarRecipes);
+    }
+  }, [dispatch]);
 
   const deleteHandler = () => {
     (async () => {
@@ -82,70 +100,136 @@ const PlannerPage = ({ navigation }) => {
     })();
   };
 
-  const createCalendar = () => {
-    (async () => {
-      let details = {
-        title: "Meal Planner Calendar",
-        color: Colors.primaryColor,
-        source: {
-          isLocalAccount: true,
-          name: "test",
-        },
-        name: "expo calendar",
-        ownerAccount: "bleh",
-        accessLevel: "owner",
-      };
+  const createCalendar = useCallback(async () => {
+    let details = {
+      title: "Meal Planner Calendar",
+      color: Colors.primaryColor,
+      source: {
+        isLocalAccount: true,
+        name: "meal planner",
+      },
+      name: "expo calendar",
+      ownerAccount: "Meal Planner",
+      accessLevel: "read",
+    };
 
-      let x = await Calendar.createCalendarAsync(details);
-      console.log("THIS IS THE CALENDER ID" , x);
-      dispatch(actions.setCalendarID(x));
+    let x = await Calendar.createCalendarAsync(details);
+    console.log("THIS IS THE CALENDER ID", x);
+    dispatch(actions.setCalendarID(x));
+  });
 
-    })();
+  const makeList = (x) => {
+    console.log(x);
+    function getDate(y) {
+      let dte = new Date(y);
+      return dte.toDateString();
+    }
+
+    let arr;
+    let finalarr = [];
+
+    x.forEach((item, index) => {
+      if (arr === undefined)
+        arr = { title: getDate(item.startDate), data: [item] };
+      else if (getDate(item.startDate) === getDate(arr.title)) {
+        arr = { title: getDate(item.startDate), data: [...arr.data, item] };
+      } else {
+        finalarr.push(arr);
+        let newarr = { title: getDate(item.startDate), data: [item] };
+        arr = newarr;
+      }
+    });
+    finalarr.push(arr);
+
+    setCalendarRecipes(finalarr);
+    setRefresh(false);
   };
 
-  const getRecipes = (calendarRecipes) => {
+  const addRecipesToList = (calendarRecipes) => {
+    let x = [...calendarRecipes];
 
-    let selectedRecipes =[];
+    x.forEach((item, index) => {
+      x[index] = {
+        ...item,
+        recipe: recipes.find((x) => x.name === item.title),
+      };
+      //selectedRecipes.push(recipes.find((x) => x.name === item.title))
+    });
 
-    calendarRecipes.forEach((item, index) =>{
-      selectedRecipes.push(recipes.find((x) => x.name === item.title))
-
-      })
-      
-      setRefresh(false)
-      setCalendarRecipes(selectedRecipes)
-
-
-  }
-
+    setCalendarRecipes(x);
+    console.log(x);
+    setRefresh(false);
+  };
 
   return (
     <Provider>
-      <ScrollView
-            refreshControl={
-              <RefreshControl
-                refreshing={refresh}
-                onRefresh={pageLoad}
-              />
-            }>
-        <Text>Monday, August 31</Text>
+      <SectionList
+        sections={calendarRecipes}
+        ListEmptyComponent={
+          <View>
+            <Text>Planner empty, choose a recipe to add</Text>
+          </View>
+        }
+        onRefresh={pageLoad}
+        refreshing={refresh}
+        //keyExtractor={(item, index) => item + index}
+        renderItem={(itemData) => {
+          console.log(itemData.item);
+          return (
+            <PlannerListItem
+              onPress={() =>
+                navigation.navigate({
+                  routeName: "RecipeDetail",
+                  params: {
+                    recipe: itemData.item.recipe,
+                    //recipeTitle: itemData.item.title,
+                    isFav: favoriteRecipes.some(
+                      (meal) => meal.id === itemData.item.recipe.id
+                    ),
+                  },
+                })
+              }
+              onLongPress={() =>
+                ActionSheet.show(
+                  {
+                    options: ["Edit Event", "Delete Event", "Cancel"],
+                    cancelButtonIndex: 2,
+                    title: "Options",
+                  },
+                  (buttonIndex) => {
+                    if (buttonIndex === 0) {
+                      navigation.navigate({
+                        routeName: "CreateAgenda",
+                        params: { recipe: itemData.item, edit: true },
+                      });
+                    }
+                    if (buttonIndex === 1) {
+                      // delete event
+                      (async () => {
+                        await Calendar.deleteEventAsync(itemData.item.id);
+                        Toast.show({
+                          text: "Item Deleted",
+                          duration: 3000,
+                        });
+                      })();
+                    }
+                  }
+                )
+              }
+              key={itemData.item.id}
+              title={itemData.item.title}
+              //title={itemData.item.recipe.name}
+              //image={itemData.item.recipe.path}
+              //time={"Dinner"}
+            ></PlannerListItem>
+          );
+        }}
+        renderSectionHeader={({ section: { title } }) => (
+          <Text style={styles.header}>{title}</Text>
+        )}
+        style={{ width: "100%" }}
+      />
 
-
-
-        {calendarRecipes ? calendarRecipes.map((recipe) => (
-        
-          <PlannerListItem
-            key={recipe.id}
-            title={recipe.name}
-            image={recipe.path}
-            time={"Dinner"}
-          ></PlannerListItem>
-        ))
-      :
-      console.log(recipe)
-      }
-
-      </ScrollView>
       <Portal>
         <FAB.Group
           open={open}
