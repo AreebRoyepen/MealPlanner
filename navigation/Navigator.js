@@ -97,6 +97,12 @@ const PlannerNavigator = createStackNavigator(
         title: 'Your Planner'
       }
     },
+    RecipeDetail : {
+      screen: RecipeDatailPage,
+      navigationOptions: {
+        title: 'Recipe Details'
+      }
+    },
     CreateAgenda: {
       screen: CreateAgenda,
       navigationOptions: {
