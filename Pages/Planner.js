@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import {
   View,
   Text,
@@ -18,6 +18,7 @@ import Colors from "../constants/Colors";
 import { useDispatch, useSelector } from "react-redux";
 import * as actions from "../store/actions/recipes";
 import { ActionSheet, Toast } from "native-base";
+import * as Api from "../api/Api";
 
 const PlannerPage = ({ navigation }) => {
   const [state, setState] = useState({ open: false });
@@ -27,10 +28,11 @@ const PlannerPage = ({ navigation }) => {
   const storedCalendarID = useSelector((state) => state.recipes.calendarID);
   const favoriteRecipes = useSelector((state) => state.recipes.favoriteRecipes);
 
-  const recipes = useSelector((state) => state.recipes.recipes);
+  // const recipes = useSelector((state) => state.recipes.recipes);
+  const recipes = useRef();
   const [refresh, setRefresh] = useState(false);
 
-  const [calendarRecipes, setCalendarRecipes] = useState();
+  const [calendarRecipes, setCalendarRecipes] = useState([]);
 
   function returnMorningDate() {
     let date = new Date();
@@ -45,6 +47,16 @@ const PlannerPage = ({ navigation }) => {
     return x;
   }
 
+  const getRecipes =useCallback( async () => {
+      const response = await Api.fetchRecipes();
+      //setRecipes(response.data);
+  
+      return response.data;
+    
+  }
+
+  );
+
   useEffect(() => {
     const willFocusSub = navigation.addListener("willFocus", pageLoad);
 
@@ -53,45 +65,44 @@ const PlannerPage = ({ navigation }) => {
     };
   }, [pageLoad]);
 
+
   const pageLoad = useCallback(async () => {
     setRefresh(true);
     let calendarRecipes;
     let calendarID;
-
-    console.log("recipes");
-    console.log(recipes);
-    // if(recipes.length === 0) {
-
-    //   await dispatch(actions.getRecipes()).then(console.log("BOB"))
-    //   console.log(recipes)
-
-    // }
-    const { status } = await Calendar.requestCalendarPermissionsAsync();
-    if (status === "granted") {
-      const calendars = await Calendar.getCalendarsAsync();
-      //await Calendar.deleteCalendarAsync("1");
-      // console.log(calendars)
-      if (calendars.find((cal) => cal.title === "Meal Planner Calendar")) {
-        calendarID = calendars.find(
-          (cal) => cal.title === "Meal Planner Calendar"
-        ).id;
-
-        dispatch(actions.setCalendarID(calendarID));
-      } else {
-        Alert.alert("You have no calendars, create one to add events");
-        await createCalendar();
-      }
-      // console.log("calendar ID")
-      // console.log(calendarID)
-      calendarRecipes = await Calendar.getEventsAsync(
-        [calendarID],
-        returnMorningDate(),
-        getMaxDate()
-      );
-
-      makeList(calendarRecipes);
-      //addRecipesToList(calendarRecipes);
+    
+    if (typeof recipes.current === "undefined") {
+      recipes.current = await getRecipes();
+      //console.log(recipes.current);
     }
+    
+      const { status } = await Calendar.requestCalendarPermissionsAsync();
+      if (status === "granted") {
+        const calendars = await Calendar.getCalendarsAsync();
+        //await Calendar.deleteCalendarAsync("1");
+        // console.log(calendars)
+        if (calendars.find((cal) => cal.title === "Meal Planner Calendar")) {
+          calendarID = calendars.find(
+            (cal) => cal.title === "Meal Planner Calendar"
+          ).id;
+
+          dispatch(actions.setCalendarID(calendarID));
+        } else {
+          Alert.alert("You have no calendars, create one to add events");
+          await createCalendar();
+        }
+        // console.log("calendar ID")
+        // console.log(calendarID)
+        calendarRecipes = await Calendar.getEventsAsync(
+          [calendarID],
+          returnMorningDate(),
+          getMaxDate()
+        );
+
+        let x = addRecipesToList(calendarRecipes);
+        makeList(x);
+      }
+    
   }, [dispatch]);
 
   const deleteHandler = () => {
@@ -119,7 +130,7 @@ const PlannerPage = ({ navigation }) => {
   });
 
   const makeList = (x) => {
-    console.log(x);
+    //console.log(x);
     function getDate(y) {
       let dte = new Date(y);
       return dte.toDateString();
@@ -127,6 +138,10 @@ const PlannerPage = ({ navigation }) => {
 
     let arr;
     let finalarr = [];
+    
+    if(x.length === 0){
+      return
+    }
 
     x.forEach((item, index) => {
       if (arr === undefined)
@@ -141,30 +156,32 @@ const PlannerPage = ({ navigation }) => {
     });
     finalarr.push(arr);
 
+    //console.log(finalarr)
     setCalendarRecipes(finalarr);
     setRefresh(false);
   };
 
   const addRecipesToList = (calendarRecipes) => {
+  
     let x = [...calendarRecipes];
-
+    
     x.forEach((item, index) => {
       x[index] = {
         ...item,
-        recipe: recipes.find((x) => x.name === item.title),
+        recipe: recipes.current.find((x) => x.name === item.title),
       };
       //selectedRecipes.push(recipes.find((x) => x.name === item.title))
     });
 
-    setCalendarRecipes(x);
-    console.log(x);
-    setRefresh(false);
+    return x;
   };
 
   return (
     <Provider>
+
+      {calendarRecipes.length !== 0 ?
       <SectionList
-        sections={calendarRecipes}
+            sections={calendarRecipes}
         ListEmptyComponent={
           <View>
             <Text>Planner empty, choose a recipe to add</Text>
@@ -174,7 +191,7 @@ const PlannerPage = ({ navigation }) => {
         refreshing={refresh}
         //keyExtractor={(item, index) => item + index}
         renderItem={(itemData) => {
-          console.log(itemData.item);
+          //console.log(itemData.item);
           return (
             <PlannerListItem
               onPress={() =>
@@ -207,6 +224,9 @@ const PlannerPage = ({ navigation }) => {
                       // delete event
                       (async () => {
                         await Calendar.deleteEventAsync(itemData.item.id);
+
+                        pageLoad();
+
                         Toast.show({
                           text: "Item Deleted",
                           duration: 3000,
@@ -217,18 +237,34 @@ const PlannerPage = ({ navigation }) => {
                 )
               }
               key={itemData.item.id}
-              title={itemData.item.title}
-              //title={itemData.item.recipe.name}
-              //image={itemData.item.recipe.path}
-              //time={"Dinner"}
+              //title={itemData.item.title}
+              title={itemData.item.recipe.name}
+              image={itemData.item.recipe.path}
+              time={"Dinner"}
             ></PlannerListItem>
           );
         }}
         renderSectionHeader={({ section: { title } }) => (
-          <Text style={styles.header}>{title}</Text>
+          <View style={styles.header}>
+          <Text >{title}</Text>
+          </View>
         )}
         style={{ width: "100%" }}
       />
+    
+    
+      :
+
+
+      <View>
+            <Text>Planner empty, choose a recipe to add</Text>
+          </View>
+      
+      
+      
+      }
+      
+
 
       <Portal>
         <FAB.Group
@@ -286,5 +322,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 15,
   },
+  header: {
+    flexDirection: "row",
+    justifyContent: "center",
+
+  }
 });
 export default PlannerPage;
