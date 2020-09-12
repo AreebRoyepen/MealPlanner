@@ -205,7 +205,9 @@ const CreateAgenda = (props) => {
           </View>
 
           <View style={styles.formControl}>
-            <Text style={styles.label}>Meal</Text>
+            <Title style={{ marginTop: 15, marginLeft: 15, marginRight: 15 }}>
+            Your Selected Meal
+           </Title>
             <TextInput
               style={styles.input}
               placeholder="search for recipes/meals"

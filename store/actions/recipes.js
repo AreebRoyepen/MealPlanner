@@ -14,9 +14,6 @@ export const getRecipes = () => {
     try{
         const response = await fetchRecipes();
 
-
-    console.log(response.data);
-
     dispatch({
       type: GET_RECIPES,
       recipes: response.data,

@@ -9,10 +9,9 @@ export async function fetchRecipes() {
   try {
 
     let resp = await fetch(API_BASE + "/v2/recipes", {headers});
-
     if(resp.status === 200){
       let data = await resp.json();
-
+      console.log(data);
       return data;
     }
   } catch (err) {
