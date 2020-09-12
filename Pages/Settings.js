@@ -17,10 +17,6 @@ import { Title, Paragraph } from "react-native-paper";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import HeaderButton from "../components/HeaderButton";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchInventory } from "../api/Api";
-import ChecklistItem from "../components/ChecklistItem";
-import { Icon, Input, CheckBox, ListItem, Toast } from "native-base";
-import * as Calendar from "expo-calendar";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { TouchableOpacity, ScrollView } from "react-native-gesture-handler";
 
@@ -92,7 +88,7 @@ const Settings = (props) => {
 
 
         <View style={styles.row}>
-        <View style={styles.viewAroundSettingText}><Text>Breakfast</Text></View>
+        <View style={styles.textboxContainer}><Text>Breakfast</Text></View>
           <View style={styles.textboxContainer}>
             <TouchableOpacity
               style={styles.textContainer}
@@ -111,7 +107,7 @@ const Settings = (props) => {
           </View>
 
           <View style={styles.row}>
-              <View style={styles.viewAroundSettingText}><Text>Lunch</Text></View>
+              <View style={styles.textboxContainer}><Text>Lunch</Text></View>
           
           <View style={styles.textboxContainer}>
             <TouchableOpacity
@@ -128,7 +124,7 @@ const Settings = (props) => {
           </View>
 
           <View style={styles.row}>
-          <Text>Dinner</Text>
+          <View style={styles.textboxContainer}><Text>Dinner</Text></View>
           <View style={styles.textboxContainer}>
             <TouchableOpacity
               style={styles.textContainer}
@@ -147,6 +143,7 @@ const Settings = (props) => {
 
           {openBreakfast && (
             <DateTimePicker
+            maximumDate={lunch}
               value={breakfast ? breakfast : new Date()}
               mode={"time"}
               is24Hour={true}
@@ -156,6 +153,8 @@ const Settings = (props) => {
           )}
           {openLunch && (
             <DateTimePicker
+            maximumDate={supper}
+            minimumDate={breakfast}
               value={lunch ? lunch : new Date()}
               mode={"time"}
               is24Hour={true}
@@ -165,6 +164,7 @@ const Settings = (props) => {
           )}
           {openSupper && (
             <DateTimePicker
+            minimumDate={lunch}
               value={supper ? supper : new Date()}
               mode={"time"}
               is24Hour={true}
@@ -197,8 +197,10 @@ Settings.navigationOptions = (navData) => {
 
 const styles = StyleSheet.create({
   textboxContainer: {
+    //backgroundColor: "blue",
     marginVertical: 20,
-    alignItems: "center",
+    alignItems: "flex-start",
+    width : 100
   },
   viewAroundSettingText:{
     //maxWidth : 300,
@@ -213,12 +215,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   textContainer: {
+    //backgroundColor: "green",
     textAlignVertical: "center",
     shadowOpacity: 20,
     paddingHorizontal: 20,
     borderBottomWidth: 1,
     borderColor: Colors.primaryColor,
     minHeight: 25,
+    width: 80
   },
   dateText: {
     color: Colors.primaryColor,
