@@ -27,6 +27,12 @@ export const getRecipes = () => {
   };
 };
 
+export const setRecipes = (recipes) => {
+  return {type: GET_RECIPES,
+    recipes: recipes,
+  }
+}
+
 export const changeSettings = (list) => {
   return {type: CHANGE_SETTINGS, list, list};
 };

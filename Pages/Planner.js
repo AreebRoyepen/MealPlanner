@@ -47,10 +47,9 @@ const PlannerPage = ({ navigation }) => {
     return x;
   }
 
-  const getRecipes =useCallback( async () => {
+  const getRecipes = useCallback( async () => {
       const response = await Api.fetchRecipes();
-      //setRecipes(response.data);
-  
+      dispatch(actions.setRecipes(response.data));
       return response.data;
     
   }
@@ -99,7 +98,9 @@ const PlannerPage = ({ navigation }) => {
           getMaxDate()
         );
 
-        let x = addRecipesToList(calendarRecipes);
+        let orderedList = orderCalendar(calendarRecipes)
+
+        let x = addRecipesToList(orderedList);
         makeList(x);
       }
     
@@ -130,7 +131,7 @@ const PlannerPage = ({ navigation }) => {
   });
 
   const makeList = (x) => {
-    //console.log(x);
+    console.log(x);
     function getDate(y) {
       let dte = new Date(y);
       return dte.toDateString();
@@ -176,6 +177,16 @@ const PlannerPage = ({ navigation }) => {
     return x;
   };
 
+  const orderCalendar = (list) => {
+
+    console.log(list);
+
+    list.sort((a, b) => (a.startDate > b.startDate) ? 1 :  -1 )
+
+    return list
+
+
+  }
   return (
     <Provider>
 
@@ -237,10 +248,9 @@ const PlannerPage = ({ navigation }) => {
                 )
               }
               key={itemData.item.id}
-              //title={itemData.item.title}
               title={itemData.item.recipe.name}
               image={itemData.item.recipe.path}
-              time={"Dinner"}
+              time={itemData.item.notes.includes("Breakfast") ? "Breakfast" : itemData.item.notes.includes("Lunch") ? "Lunch" :itemData.item.notes.includes("Dinner") ? "Dinner" : ""}
             ></PlannerListItem>
           );
         }}
@@ -276,7 +286,7 @@ const PlannerPage = ({ navigation }) => {
             {
               icon: "plus",
               label: "add meal to planner",
-              onPress: () => navigation.navigate("CreateAgenda"),
+              onPress: () => navigation.navigate({routeName:'CreateAgenda', params: {dropdown:true}}),
             },
             // {
             //   icon: 'email',
