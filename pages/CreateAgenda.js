@@ -1,42 +1,36 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
-  ActivityIndicator,
-  RefreshControl,
-  SectionList,
   KeyboardAvoidingView,
-  Linking,
   TextInput,
   Button,
   Alert,
 } from "react-native";
 
-import { Title, Paragraph } from "react-native-paper";
-import { HeaderButtons, Item } from "react-navigation-header-buttons";
-import HeaderButton from "../components/HeaderButton";
+import { Title } from "react-native-paper";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchInventory } from "../api/Api";
-import ChecklistItem from "../components/ChecklistItem";
-import { Icon, Input, CheckBox, ListItem, Toast } from "native-base";
+import { CheckBox, Toast } from "native-base";
 import * as Calendar from "expo-calendar";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { TouchableOpacity, ScrollView } from "react-native-gesture-handler";
 
 import Colors from "../constants/Colors";
-import * as recipeActions from "../store/actions/recipes";
+import RecipeModal from "../components/RecipeModal";
 
 const CreateAgenda = (props) => {
   const mealTimes = useSelector((state) => state.recipes.mealTimes);
 
   const recipes = useSelector((state) => state.recipes.selectedRecipes);
 
-  const selectedRecipe = props.navigation.getParam("recipe");
+  const [selectedRecipe,setSelectedRecipe] = useState(props.navigation.getParam("recipe"));
+  const dropdown = props.navigation.getParam("dropdown");
   const edit = props.navigation.getParam("edit");
 
   const [openDate, setOpenDate] = useState(false);
-
+  const [modal, setModalOpen] = useState(false)
   const [date, setDate] = useState();
 
   const [isBreakfastSelected, setBreakfastSelection] = useState(false);
@@ -52,15 +46,21 @@ const CreateAgenda = (props) => {
     }
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log(selectedRecipe);
     console.log(edit);
-    if(edit){
-      let x = new Date(selectedRecipe.startDate);  
-      setDate(x)
+    if (edit) {
+      let x = new Date(selectedRecipe.startDate);
+      if (selectedRecipe.notes.includes("Breakfast")) {
+        setBreakfastSelection(true)
+      } else if (selectedRecipe.notes.includes("Lunch")) {
+        setLunchSelection(true)
+      } else if (selectedRecipe.notes.includes("Dinner")) {
+        setDinnerSelection(true)
+      }
+      setDate(x);
     }
-  },[]);
-
+  }, []);
 
   const setBreakfastSelectionHandler = () => {
     setBreakfastSelection(true);
@@ -108,8 +108,7 @@ const CreateAgenda = (props) => {
           title: selectedRecipe.name,
           startDate: date,
           endDate: endDate,
-          notes:
-            "Please do not edit. This event has been created by your Meal Planner app. \n\nCheck the app for instructions and ingredients :)",
+          notes: mealTimeString()
         };
 
         let x = await Calendar.createEventAsync(calendarID.toString(), details);
@@ -123,6 +122,18 @@ const CreateAgenda = (props) => {
       Alert.alert("Choose a date please");
     }
   };
+
+  function mealTimeString(){
+
+    if (isBreakfastSelected) {
+      return "Breakfast"
+    } else if (isLunchSelected) {
+      return "Lunch"
+    } else if (isDinnerSelected) {
+      return "Dinner"
+    }
+
+  }
 
   const editEvent = () => {
     if (date) {
@@ -149,11 +160,10 @@ const CreateAgenda = (props) => {
 
       (async () => {
         let details = {
-          title: selectedRecipe.name,
+          title: selectedRecipe.recipe.name,
           startDate: date,
           endDate: endDate,
-          notes:
-            "Please do not edit. This event has been created by your Meal Planner app. \n\nCheck the app for instructions and ingredients :)",
+          notes:mealTimeString()
         };
 
         await Calendar.updateEventAsync(selectedRecipe.id, details);
@@ -174,10 +184,55 @@ const CreateAgenda = (props) => {
       behavior={Platform.OS == "ios" ? "padding" : "height"}
       keyboardVerticalOffset={90}
     >
+      {console.log(selectedRecipe)}
       <ScrollView>
         <View>
-          <Title style={{ marginTop: 15, marginLeft: 15, marginRight: 15 }}>
-            Setting A Meal For The Day
+
+        <View style={styles.formControl}>
+            <Title style={{ marginTop: 15, marginLeft: 15, marginRight: 15 }}>
+              Your Selected Meal
+            </Title>
+            {dropdown ? (
+              <View>
+                <View style={styles.textboxContainer}>
+                  <TouchableOpacity
+                    style={styles.textContainer}
+                    onPress={() => setModalOpen(!modal)}
+                  >
+                    <Text style={styles.dateText}>
+                      {selectedRecipe ? selectedRecipe.name : "Select a Meal"}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+
+                <RecipeModal visible={modal} recipe = {(x) => setSelectedRecipe(x)} close = {() => setModalOpen(!modal)}></RecipeModal>
+              </View>
+            ) : (
+              <View>
+                {/* <TextInput
+                  style={styles.input}
+                  placeholder="search for recipes/meals"
+                  value={
+                    edit ? selectedRecipe.recipe.name : selectedRecipe.name
+                  }
+                /> */}
+                <View style={styles.textboxContainer}>
+                  <TouchableOpacity
+                    style={styles.textContainer}
+                    onPress={() => setModalOpen(!modal)}
+                  >
+                    <Text style={styles.dateText}>
+                      {edit ? selectedRecipe.recipe.name : selectedRecipe.name}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                <RecipeModal visible={modal} recipe = {(x) => setSelectedRecipe({...selectedRecipe, recipe : x})} close = {() => setModalOpen(!modal)}></RecipeModal>
+              </View>
+            )}
+          </View>
+
+          <Title style={{ marginLeft: 15, marginRight: 15 }}>
+            Your Meal Day
           </Title>
 
           <View style={styles.formControl}>
@@ -186,7 +241,7 @@ const CreateAgenda = (props) => {
                 style={styles.textContainer}
                 onPress={() => setOpenDate(!openDate)}
               >
-              <Text style={styles.dateText}>
+                <Text style={styles.dateText}>
                   {date ? date.toDateString() : "Select a day"}
                 </Text>
               </TouchableOpacity>
@@ -204,16 +259,9 @@ const CreateAgenda = (props) => {
             )}
           </View>
 
-          <View style={styles.formControl}>
-            <Title style={{ marginTop: 15, marginLeft: 15, marginRight: 15 }}>
-            Your Selected Meal
-           </Title>
-            <TextInput
-              style={styles.input}
-              placeholder="search for recipes/meals"
-              value={edit ? selectedRecipe.recipe.name : selectedRecipe.name}
-            />
-          </View>
+          <Title style={{ marginTop: 15, marginLeft: 15, marginRight: 15 }}>
+            Your Meal Time
+          </Title>
 
           <View style={styles.checkboxRow}>
             <View style={styles.checkboxContainer}>
@@ -251,8 +299,8 @@ const CreateAgenda = (props) => {
               icon="send"
               mode="contained"
               color={Colors.buttonColor}
-              title={edit ? "Edit Meal In Planner":"Add Meal To Planner"}
-              onPress={() => edit ? editEvent() : addEvent()}
+              title={edit ? "Edit Meal In Planner" : "Add Meal To Planner"}
+              onPress={() => (edit ? editEvent() : addEvent())}
             />
           </View>
         </View>
