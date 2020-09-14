@@ -104,9 +104,7 @@ const RecipeList = (props) => {
   const searchRecipes = (text) => {
 
     setSearchWord(text)
-
-    const filteredList = initialRecipes.filter((item) => { return item.name.search(text) >-1 })
-
+    const filteredList = initialRecipes.filter((item) => { return item.name.toLowerCase().includes(text.toLowerCase()) })
     setFilteredRecipes(filteredList)
 
   }
