@@ -7,6 +7,7 @@ import {
   TextInput,
   Button,
   Alert,
+  Switch,
 } from "react-native";
 
 import { Title } from "react-native-paper";
@@ -25,12 +26,14 @@ const CreateAgenda = (props) => {
 
   const recipes = useSelector((state) => state.recipes.selectedRecipes);
 
-  const [selectedRecipe,setSelectedRecipe] = useState(props.navigation.getParam("recipe"));
+  const [selectedRecipe, setSelectedRecipe] = useState(
+    props.navigation.getParam("recipe")
+  );
   const dropdown = props.navigation.getParam("dropdown");
   const edit = props.navigation.getParam("edit");
 
   const [openDate, setOpenDate] = useState(false);
-  const [modal, setModalOpen] = useState(false)
+  const [modal, setModalOpen] = useState(false);
   const [date, setDate] = useState();
 
   const [isBreakfastSelected, setBreakfastSelection] = useState(false);
@@ -38,6 +41,13 @@ const CreateAgenda = (props) => {
   const [isDinnerSelected, setDinnerSelection] = useState(false);
 
   const calendarID = useSelector((state) => state.recipes.calendarID);
+
+  const [isEnabled, setIsEnabled] = useState(false);
+  const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
+
+  const [hourBefore, setHourBefore] = useState(false);
+  const [morningOf, setMorningOf] = useState(false);
+  const [nighBefore, setNightBefore] = useState(false);
 
   const dateHandler = (event, date) => {
     if (event.type !== "dismissed") {
@@ -47,16 +57,15 @@ const CreateAgenda = (props) => {
   };
 
   useEffect(() => {
-    console.log(selectedRecipe);
-    console.log(edit);
     if (edit) {
       let x = new Date(selectedRecipe.startDate);
+      console.log(selectedRecipe)
       if (selectedRecipe.notes.includes("Breakfast")) {
-        setBreakfastSelection(true)
+        setBreakfastSelection(true);
       } else if (selectedRecipe.notes.includes("Lunch")) {
-        setLunchSelection(true)
+        setLunchSelection(true);
       } else if (selectedRecipe.notes.includes("Dinner")) {
-        setDinnerSelection(true)
+        setDinnerSelection(true);
       }
       setDate(x);
     }
@@ -81,7 +90,13 @@ const CreateAgenda = (props) => {
   };
 
   const addEvent = () => {
+    let alarm = [];
+    if(!isBreakfastSelected  && !isLunchSelected && !isDinnerSelected){
+      Alert.alert("Choose a meal time, please")
+      return
+    }
     if (date) {
+      
       if (isBreakfastSelected) {
         date.setHours(mealTimes.breakfastTime.hour);
         date.setMinutes(mealTimes.breakfastTime.minute);
@@ -98,8 +113,26 @@ const CreateAgenda = (props) => {
         Alert.alert("Choose a meal time please");
       }
 
-      console.log("DATE");
-      console.log(date);
+      if(isEnabled){
+
+        if(hourBefore){
+          alarm = [...alarm, {relativeOffset: -60 }]
+        }
+        if(morningOf){
+          let alarmTime = new Date(date);
+          alarmTime.setHours(6);
+          let x = date.getTime() - alarmTime.getTime();
+          alarm = [...alarm, {relativeOffset: -(x/60000)}]
+        }
+        if(nighBefore){
+          let alarmTime = new Date(date);
+          alarmTime.setDate(alarmTime.getDate() - 1);
+          alarmTime.setHours(18);
+          let x = date.getTime() - alarmTime.getTime();
+          alarm = [...alarm, {relativeOffset: -(x/60000)}]
+        }
+      }
+
       var endDate = new Date(date.getTime());
       endDate.setHours(endDate.getHours() + 1);
 
@@ -108,7 +141,8 @@ const CreateAgenda = (props) => {
           title: selectedRecipe.name,
           startDate: date,
           endDate: endDate,
-          notes: mealTimeString()
+          notes: mealTimeString(),
+          alarms : alarm
         };
 
         let x = await Calendar.createEventAsync(calendarID.toString(), details);
@@ -123,16 +157,14 @@ const CreateAgenda = (props) => {
     }
   };
 
-  function mealTimeString(){
-
+  function mealTimeString() {
     if (isBreakfastSelected) {
-      return "Breakfast"
+      return "Breakfast";
     } else if (isLunchSelected) {
-      return "Lunch"
+      return "Lunch";
     } else if (isDinnerSelected) {
-      return "Dinner"
+      return "Dinner";
     }
-
   }
 
   const editEvent = () => {
@@ -163,7 +195,7 @@ const CreateAgenda = (props) => {
           title: selectedRecipe.recipe.name,
           startDate: date,
           endDate: endDate,
-          notes:mealTimeString()
+          notes: mealTimeString(),
         };
 
         await Calendar.updateEventAsync(selectedRecipe.id, details);
@@ -187,8 +219,7 @@ const CreateAgenda = (props) => {
       {console.log(selectedRecipe)}
       <ScrollView>
         <View>
-
-        <View style={styles.formControl}>
+          <View style={styles.formControl}>
             <Title style={{ marginTop: 15, marginLeft: 15, marginRight: 15 }}>
               Your Selected Meal
             </Title>
@@ -205,7 +236,11 @@ const CreateAgenda = (props) => {
                   </TouchableOpacity>
                 </View>
 
-                <RecipeModal visible={modal} recipe = {(x) => setSelectedRecipe(x)} close = {() => setModalOpen(!modal)}></RecipeModal>
+                <RecipeModal
+                  visible={modal}
+                  recipe={(x) => setSelectedRecipe(x)}
+                  close={() => setModalOpen(!modal)}
+                ></RecipeModal>
               </View>
             ) : (
               <View>
@@ -226,7 +261,13 @@ const CreateAgenda = (props) => {
                     </Text>
                   </TouchableOpacity>
                 </View>
-                <RecipeModal visible={modal} recipe = {(x) => setSelectedRecipe({...selectedRecipe, recipe : x})} close = {() => setModalOpen(!modal)}></RecipeModal>
+                <RecipeModal
+                  visible={modal}
+                  recipe={(x) =>
+                    setSelectedRecipe({ ...selectedRecipe, recipe: x })
+                  }
+                  close={() => setModalOpen(!modal)}
+                ></RecipeModal>
               </View>
             )}
           </View>
@@ -294,6 +335,57 @@ const CreateAgenda = (props) => {
             </View>
           </View>
 
+          <View style={styles.rowReminder}>
+            <View style={styles.textboxContainer}>
+              <Title style={{ marginLeft: 15, marginRight: 15 }}>
+                Set Reminder
+              </Title>
+            </View>
+            <View style={styles.textboxContainer}>
+              <Switch
+                trackColor={{ false: "#767577", true: Colors.buttonColor }}
+                thumbColor={isEnabled ? Colors.buttonColor : "#f4f3f4"}
+                //ios_backgroundColor="#3e3e3e"
+                onValueChange={toggleSwitch}
+                value={isEnabled}
+              />
+            </View>
+          </View>
+
+          {isEnabled && (
+            <View>
+              <View style={styles.checkboxRowReminders}>
+              <View style={styles.checkboxContainer}>
+                  <CheckBox
+                    color={Colors.buttonColor}
+                    checked={hourBefore}
+                    onPress={() => setHourBefore(!hourBefore)}
+                    style={styles.checkbox}
+                  />
+                  <Text style={styles.label}>1 Hour Before</Text>
+                </View>
+                <View style={styles.checkboxContainer}>
+                  <CheckBox
+                    color={Colors.buttonColor}
+                    checked={morningOf}
+                    onPress={() => setMorningOf(!morningOf)}
+                    style={styles.checkbox}
+                  />
+                  <Text style={styles.label}>Morning Of</Text>
+                </View>
+                <View style={styles.checkboxContainer}>
+                  <CheckBox
+                    color={Colors.buttonColor}
+                    checked={nighBefore}
+                    onPress={() => setNightBefore(!nighBefore)}
+                    style={styles.checkbox}
+                  />
+                  <Text style={styles.label}>Night Before</Text>
+                </View>
+              </View>
+            </View>
+          )}
+
           <View style={styles.buttonContainer}>
             <Button
               icon="send"
@@ -339,6 +431,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  rowReminder: {
+    // paddingHorizontal : 20,
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+  },
   textContainer: {
     //textAlignVertical: "center",
     shadowOpacity: 20,
@@ -374,6 +472,14 @@ const styles = StyleSheet.create({
     marginTop: 15,
     marginLeft: 15,
     marginRight: 15,
+    marginBottom: 30
+  },
+  checkboxRowReminders: {
+    flexDirection: "row",
+    marginBottom: 20,
+    //justifyContent: "space-between",
+    //marginHorizontal: 30,
+    marginVertical: 20,
   },
   checkboxRow: {
     flexDirection: "row",
