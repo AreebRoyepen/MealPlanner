@@ -4,8 +4,8 @@ import {
   Text,
   StyleSheet,
   Alert,
-  FlatList,
   SectionList,
+  ActivityIndicator
 } from "react-native";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import { FAB, Portal, Provider } from "react-native-paper";
@@ -31,7 +31,7 @@ const PlannerPage = ({ navigation }) => {
   // const recipes = useSelector((state) => state.recipes.recipes);
   const recipes = useRef();
   const [refresh, setRefresh] = useState(false);
-
+  const [loading,setLoading] = useState(false)
   const [calendarRecipes, setCalendarRecipes] = useState([]);
 
   function returnMorningDate() {
@@ -71,8 +71,8 @@ const PlannerPage = ({ navigation }) => {
     let calendarID;
     
     if (typeof recipes.current === "undefined") {
+      setLoading(true)
       recipes.current = await getRecipes();
-      //console.log(recipes.current);
     }
     
       const { status } = await Calendar.requestCalendarPermissionsAsync();
@@ -160,6 +160,7 @@ const PlannerPage = ({ navigation }) => {
     //console.log(finalarr)
     setCalendarRecipes(finalarr);
     setRefresh(false);
+    setLoading(false)
   };
 
   const addRecipesToList = (calendarRecipes) => {
@@ -265,10 +266,17 @@ const PlannerPage = ({ navigation }) => {
     
       :
 
+      loading ?
+
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <ActivityIndicator size="large" color={Colors.primaryColor} />
+    </View>
+
+      :
 
       <View>
             <Text>Planner empty, choose a recipe to add</Text>
-          </View>
+      </View>
       
       
       

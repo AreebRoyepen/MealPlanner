@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   RefreshControl,
   SectionList,
+  Alert
 } from "react-native";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import * as Calendar from "expo-calendar";
@@ -56,10 +57,11 @@ const GroceryListPage = (props) => {
 
   const getDatesForList = () => {
 
-    
-    console.log(endDate);
-    console.log(startDate);
-
+    if (startDate === undefined || endDate === undefined){
+        
+      Alert.alert("Please choose a start and end date")
+      return
+  }
     (async () =>{
 
     const { status } = await Calendar.requestCalendarPermissionsAsync();
@@ -81,7 +83,7 @@ const GroceryListPage = (props) => {
   }
 
   const getList = useCallback(async (calendarRecipes) => {
-
+       
       let param = "";
 
       //console.log(calendarRecipes)

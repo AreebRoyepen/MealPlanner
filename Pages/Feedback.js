@@ -17,8 +17,8 @@ import HeaderButton from "../components/HeaderButton";
 import Colors from "../constants/Colors";
 
 const FeedbackPage = () => {
-  const [subject, setSubject] = useState();
-  const [message, setMessage] = useState();
+  const [subject, setSubject] = useState("");
+  const [message, setMessage] = useState("");
 
   return (
     <KeyboardAvoidingView
