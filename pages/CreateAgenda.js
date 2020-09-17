@@ -59,7 +59,7 @@ const CreateAgenda = (props) => {
   useEffect(() => {
     if (edit) {
       let x = new Date(selectedRecipe.startDate);
-      console.log(selectedRecipe)
+      //console.log(selectedRecipe)
       if (selectedRecipe.notes.includes("Breakfast")) {
         setBreakfastSelection(true);
       } else if (selectedRecipe.notes.includes("Lunch")) {
@@ -67,7 +67,37 @@ const CreateAgenda = (props) => {
       } else if (selectedRecipe.notes.includes("Dinner")) {
         setDinnerSelection(true);
       }
+      if(selectedRecipe.alarms){
+        setIsEnabled(true)
+      }
       setDate(x);
+
+      selectedRecipe.alarms.forEach((alarms) => {
+
+        if(alarms.relativeOffset === -60){
+          setHourBefore(true)
+        }else{
+
+          let offset = (alarms.relativeOffset);
+
+          let thisDate = new Date(x);
+
+          thisDate.setMinutes(thisDate.getMinutes() + offset);
+
+          console.log("DATE: ");
+          console.log(thisDate);
+
+          if(thisDate.getHours() === 1){
+            console.log("x")
+            setMorningOf(true)
+          }else if( thisDate.getDate() + 1 === x.getDate()){
+            //console.log(thisDate)
+            setNightBefore(true)
+          }
+
+        }
+
+      })
     }
   }, []);
 
@@ -120,7 +150,7 @@ const CreateAgenda = (props) => {
         }
         if(morningOf){
           let alarmTime = new Date(date);
-          alarmTime.setHours(6);
+          alarmTime.setHours(1);
           let x = date.getTime() - alarmTime.getTime();
           alarm = [...alarm, {relativeOffset: -(x/60000)}]
         }
@@ -168,6 +198,8 @@ const CreateAgenda = (props) => {
   }
 
   const editEvent = () => {
+
+    let alarm = [];
     if (date) {
       if (isBreakfastSelected) {
         date.setHours(mealTimes.breakfastTime.hour);
@@ -190,12 +222,33 @@ const CreateAgenda = (props) => {
       var endDate = new Date(date.getTime());
       endDate.setHours(endDate.getHours() + 1);
 
+      if(isEnabled){
+
+        if(hourBefore){
+          alarm = [...alarm, {relativeOffset: -60 }]
+        }
+        if(morningOf){
+          let alarmTime = new Date(date);
+          alarmTime.setHours(1);
+          let x = date.getTime() - alarmTime.getTime();
+          alarm = [...alarm, {relativeOffset: -(x/60000)}]
+        }
+        if(nighBefore){
+          let alarmTime = new Date(date);
+          alarmTime.setDate(alarmTime.getDate() - 1);
+          alarmTime.setHours(18);
+          let x = date.getTime() - alarmTime.getTime();
+          alarm = [...alarm, {relativeOffset: -(x/60000)}]
+        }
+      }
+
       (async () => {
         let details = {
           title: selectedRecipe.recipe.name,
           startDate: date,
           endDate: endDate,
           notes: mealTimeString(),
+          alarms : alarm
         };
 
         await Calendar.updateEventAsync(selectedRecipe.id, details);
@@ -244,13 +297,7 @@ const CreateAgenda = (props) => {
               </View>
             ) : (
               <View>
-                {/* <TextInput
-                  style={styles.input}
-                  placeholder="search for recipes/meals"
-                  value={
-                    edit ? selectedRecipe.recipe.name : selectedRecipe.name
-                  }
-                /> */}
+
                 <View style={styles.textboxContainer}>
                   <TouchableOpacity
                     style={styles.textContainer}
@@ -423,7 +470,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   textboxContainer: {
-    marginVertical: 20,
+    marginVertical: 15,
     alignItems: "center",
     alignContent: "center",
   },

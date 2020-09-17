@@ -84,7 +84,6 @@ const PlannerPage = ({ navigation }) => {
           calendarID = calendars.find(
             (cal) => cal.title === "Meal Planner Calendar"
           ).id;
-
           dispatch(actions.setCalendarID(calendarID));
         } else {
           Alert.alert("You have no calendars, create one to add events");
@@ -141,6 +140,8 @@ const PlannerPage = ({ navigation }) => {
     let finalarr = [];
     
     if(x.length === 0){
+      setRefresh(false);
+      setLoading(false)
       return
     }
 
