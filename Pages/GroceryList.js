@@ -9,22 +9,20 @@ import {
   Alert
 } from "react-native";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
-import * as Calendar from "expo-calendar";
-
-import HeaderButton from "../components/HeaderButton";
-import { useSelector, useDispatch } from "react-redux";
-import { fetchInventory } from "../api/Api";
-import ChecklistItem from "../components/ChecklistItem";
-import { Icon, Input, Button } from "native-base";
-
-import Colors from "../constants/Colors";
-
-import * as recipeActions from "../store/actions/recipes";
-
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { TouchableOpacity, ScrollView } from "react-native-gesture-handler";
+import * as Calendar from "expo-calendar";
+import { useSelector, useDispatch } from "react-redux";
+import { Icon, Input, Button } from "native-base";
+
+import HeaderButton from "../components/HeaderButton";
+import { fetchInventory } from "../api/Api";
+import ChecklistItem from "../components/ChecklistItem";
+import Colors from "../constants/Colors";
+import * as recipeActions from "../store/actions/recipes";
 
 const GroceryListPage = (props) => {
+
   const calendarID = useSelector((state) => state.recipes.calendarID);
   const recipes = useSelector((state) => state.recipes.recipes);
   const [error, setError] = useState(false);
@@ -118,7 +116,6 @@ const GroceryListPage = (props) => {
           setError(false);
         }
 
-
       } catch (err) {
         setError(true);
       } finally {
@@ -134,12 +131,6 @@ const GroceryListPage = (props) => {
       willFocusSub.remove();
     };
   }, [getList]);
-
-  // useEffect(() => {
-  //   setIsLoading(true);
-  //   getList();
-  //   setIsLoading(false);
-  // }, [getList]);
 
   const checkItem = (x) => {
     const currentGroceries = [...groceries];
@@ -174,17 +165,6 @@ const GroceryListPage = (props) => {
     }
   };
 
-  //   if(groceries.length === 0) {
-  //     return (
-  //       <View style = {{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-  //       <Text >
-  //       Use the buttons above to generate a grocery list
-  //     </Text>
-
-  // </View>
-  //     )
-  //   }
-
   return isLoading ? (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <ActivityIndicator size="large" color={Colors.primaryColor} />
@@ -203,14 +183,8 @@ const GroceryListPage = (props) => {
   ) : (
     <View style={styles.mainList}>
       <SectionList
-        ListEmptyComponent={
-          <View
-            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-          >
-            <Text>Use the buttons above to generate a grocery list</Text>
-          </View>
-        }
         ListHeaderComponent={
+          <View>
           <View style={styles.textboxContainer}>
             <View style={styles.row}>
               <TouchableOpacity
@@ -245,6 +219,14 @@ const GroceryListPage = (props) => {
               />
             </Button>
           </View>
+          {groceries.length ? <View/> :
+                    <View
+                    style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+                  >
+                    <Text>Use the buttons above to generate a grocery list</Text>
+                  </View>
+        }
+                  </View>
         }
         // renderSectionHeader={({ section: { title } }) => (
         //   <Text >{title}</Text>

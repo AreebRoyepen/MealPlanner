@@ -1,9 +1,8 @@
-import React from 'react';
-import { Platform, Text } from 'react-native';
+import { Platform } from 'react-native';
 import {createDrawerNavigator} from 'react-navigation-drawer';
-
 import {createStackNavigator} from 'react-navigation-stack';
 import {createAppContainer} from 'react-navigation';
+
 import HomePage from '../pages/HomePage';
 import CreateAgenda from '../pages/CreateAgenda';
 import FeedbackPage from '../pages/Feedback';
@@ -190,7 +189,7 @@ const MainNavigator = createDrawerNavigator(
     contentOptions: {
       activeTintColor: Colors.accentColor,
       labelStyle: {
-        fontFamily: 'open-sans-bold'
+        fontFamily: 'open-sans'
       }
     }
   }

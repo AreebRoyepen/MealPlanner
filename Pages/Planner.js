@@ -258,7 +258,7 @@ const PlannerPage = ({ navigation }) => {
         }}
         renderSectionHeader={({ section: { title } }) => (
           <View style={styles.header}>
-          <Text >{title}</Text>
+          <Text style={styles.headerText}>{title}</Text>
           </View>
         )}
         style={{ width: "100%" }}
@@ -344,6 +344,9 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     justifyContent: "center",
+  },
+  headerText: {
+    fontFamily: "open-sans-bold",
 
   }
 });

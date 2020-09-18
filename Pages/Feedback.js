@@ -28,10 +28,10 @@ const FeedbackPage = () => {
     >
       <ScrollView>
         <View>
-          <Title style={{ marginTop: 15, marginLeft: 15, marginRight: 15 }}>
-            Send Us Your Feedback
+          <Title style={{ fontFamily: "open-sans-bold", marginTop: 15, marginLeft: 15, marginRight: 15 }}>
+            Help Us Make This App Better
           </Title>
-          <Paragraph style={{ marginTop: 15, marginLeft: 15, marginRight: 15 }}>
+          <Paragraph style={{ fontFamily: "open-sans", marginTop: 15, marginLeft: 15, marginRight: 15 }}>
             We would love to hear from you!
           </Paragraph>
 
@@ -67,6 +67,7 @@ const FeedbackPage = () => {
                 )
               }
               title="Send Feedback"
+              style={{fontFamily: "open-sans"}}
             />
           </View>
         </View>

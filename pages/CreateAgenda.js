@@ -4,27 +4,23 @@ import {
   Text,
   StyleSheet,
   KeyboardAvoidingView,
-  TextInput,
   Button,
   Alert,
   Switch,
 } from "react-native";
-
+import { TouchableOpacity, ScrollView } from "react-native-gesture-handler";
 import { Title } from "react-native-paper";
-import { useSelector, useDispatch } from "react-redux";
-import { fetchInventory } from "../api/Api";
+import { useSelector, } from "react-redux";
 import { CheckBox, Toast } from "native-base";
 import * as Calendar from "expo-calendar";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { TouchableOpacity, ScrollView } from "react-native-gesture-handler";
 
 import Colors from "../constants/Colors";
 import RecipeModal from "../components/RecipeModal";
 
 const CreateAgenda = (props) => {
-  const mealTimes = useSelector((state) => state.recipes.mealTimes);
 
-  const recipes = useSelector((state) => state.recipes.selectedRecipes);
+  const mealTimes = useSelector((state) => state.recipes.mealTimes);
 
   const [selectedRecipe, setSelectedRecipe] = useState(
     props.navigation.getParam("recipe")
@@ -82,16 +78,11 @@ const CreateAgenda = (props) => {
 
           let thisDate = new Date(x);
 
-          thisDate.setMinutes(thisDate.getMinutes() + offset);
-
-          console.log("DATE: ");
-          console.log(thisDate);
+          thisDate.setMinutes(thisDate.getMinutes() + offset)
 
           if(thisDate.getHours() === 1){
-            console.log("x")
             setMorningOf(true)
           }else if( thisDate.getDate() + 1 === x.getDate()){
-            //console.log(thisDate)
             setNightBefore(true)
           }
 

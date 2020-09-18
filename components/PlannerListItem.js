@@ -1,15 +1,11 @@
 import React, { useState } from "react";
 import { Card, CardItem, Body, Left, Thumbnail } from "native-base";
-
 import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
-  ImageBackground,
-  TouchableHighlight,
-  Modal,
 } from "react-native";
+
 import Colors from "../constants/Colors";
 
 const PlannerListItem = (props) => {
