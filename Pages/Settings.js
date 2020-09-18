@@ -3,14 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  ActivityIndicator,
-  RefreshControl,
-  SectionList,
-  KeyboardAvoidingView,
-  Linking,
-  TextInput,
-  Button,
-  Alert,
 } from "react-native";
 
 import { Title, Paragraph } from "react-native-paper";
@@ -201,12 +193,6 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     alignItems: "flex-start",
     width : 100
-  },
-  viewAroundSettingText:{
-    //maxWidth : 300,
-    // width: 100,
-    // backgroundColor: "grey",
-    // justifyContent: "center"
   },
   row: {
     // paddingHorizontal : 20,
