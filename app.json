@@ -2,11 +2,19 @@
   "name": "MealPlanner_v0.5",
   "displayName": "MealPlanner_v0.5",
   "expo": {
-    "name": "MealPlanner v0.5",
-    "slug": "MealPlanner",
+    "name": "Salwa's Meal Planner",
+    "slug": "salwas_meal_planner",
+    "description": "Meal Planner for Salwa",
     "version": "0.5.0",
     "assetBundlePatterns": [
       "**/*"
-    ]
+    ],
+    "android":{
+      "package": "za.co.tripler_it.salwas_meal_planner",
+      "versionCode":1,  
+      "permissions":[
+        "READ_CALENDAR","WRITE_CALENDAR","WRITE_EXTERNAL_STORAGE", "READ_EXTERNAL_STORAGE"
+      ]
+    }
   }
 }
