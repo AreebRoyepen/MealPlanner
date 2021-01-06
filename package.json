@@ -12,7 +12,7 @@
     "@react-native-community/async-storage": "^1.11.0",
     "@react-native-community/datetimepicker": "2.4.0",
     "@react-native-community/masked-view": "0.1.10",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "expo": "^38.0.8",
     "expo-calendar": "~8.2.1",
     "expo-splash-screen": "~0.3.1",
